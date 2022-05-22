@@ -38,6 +38,12 @@ Viewport::Viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) : x(
 
 FrameBuffer::operator Color*() { return data; }
 
+void RendererScenePassData::recalculateProjectionViewMatrix()
+{
+    projectionViewMatrix = cameraSpecs.calculateProjectionMatrix();
+    projectionViewMatrix *= viewMatrix;
+}
+
 //==================================================================================================
 // Utility functions
 //==================================================================================================
@@ -61,18 +67,26 @@ Renderer::Renderer(FrameBuffer& frameBuffer)
 {
 }
 
-void Renderer::clear()
+void Renderer::setViewport(const Viewport& viewport) { m_Viewport = viewport; }
+
+void Renderer::beginScene(const OrthographicCameraSpecs& cameraSpecs, const Mat3f& viewMatrix)
+{
+    m_ScenePassData.cameraSpecs = cameraSpecs;
+    m_ScenePassData.viewMatrix  = viewMatrix;
+    m_ScenePassData.recalculateProjectionViewMatrix();
+}
+
+void Renderer::endScene() {}
+
+void Renderer::clear(Color color)
 {
     const uint32_t pixels = m_FrameBuffer.width * m_FrameBuffer.height;
 
     for (uint32_t pixel = 0; pixel < pixels; ++pixel)
     {
-        m_FrameBuffer[pixel] = m_Color;
+        m_FrameBuffer[pixel] = color;
     }
 }
-
-void Renderer::setColor(Color color) { m_Color = color; }
-void Renderer::setViewport(const Viewport& viewport) { m_Viewport = viewport; }
 
 void Renderer::putPixelBlended(Vec2i pixel, Vec3f rgb, float alpha)
 {
@@ -105,25 +119,25 @@ float capsuleSDF(Vec2f pixel, Vec2f from, Vec2f to, float thickness)
     return length(delta) - thickness;
 }
 
-void Renderer::drawLine(Vec2f ndcFrom, Vec2f ndcTo, float thickness)
+void Renderer::drawLine(const Line& line)
 {
-    Vec2f from = ndcToFrameBuffer(ndcFrom);
-    Vec2f to   = ndcToFrameBuffer(ndcTo);
+    Vec2f from = ndcToFrameBuffer(m_ScenePassData.projectionViewMatrix * Vec3f(line.from));
+    Vec2f to   = ndcToFrameBuffer(m_ScenePassData.projectionViewMatrix * Vec3f(line.to));
 
-    int x0 = static_cast<int>(std::floor(std::min(from.x, to.x) - thickness));
-    int x1 = static_cast<int>(std::ceil(std::max(from.x, to.x) + thickness));
+    int x0 = static_cast<int>(std::floor(std::min(from.x, to.x) - line.thickness));
+    int x1 = static_cast<int>(std::ceil(std::max(from.x, to.x) + line.thickness));
 
-    int y0 = static_cast<int>(std::floor(std::min(from.y, to.y) - thickness));
-    int y1 = static_cast<int>(std::ceil(std::max(from.y, to.y) + thickness));
+    int y0 = static_cast<int>(std::floor(std::min(from.y, to.y) - line.thickness));
+    int y1 = static_cast<int>(std::ceil(std::max(from.y, to.y) + line.thickness));
 
-    Colorf color(m_Color);
+    Colorf colorf(line.color);
 
     for (int y = y0; y <= y1; ++y)
     {
         for (int x = x0; x <= x1; ++x)
         {
-            float alpha = std::max(std::min(0.5f - capsuleSDF(Vec2f(x, y), from, to, thickness), 1.0f), 0.0f);
-            putPixelBlended(Vec2i(x, y), color.rgb, color.a * alpha);
+            float alpha = std::max(std::min(0.5f - capsuleSDF(Vec2f(x, y), from, to, line.thickness), 1.0f), 0.0f);
+            putPixelBlended(Vec2i(x, y), colorf.rgb, colorf.a * alpha);
         }
     }
 }

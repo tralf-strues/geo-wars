@@ -60,4 +60,19 @@ Mat3<float> translationMatrix(Vec2<float> translation)
              0, 0,             1}};
 }
 
+Mat3<float> orthoProjectionMatrix(float left, float right, float bottom, float top)
+{
+    assert(right > left);
+    assert(top > bottom);
+
+    return {{2 / (right - left), 0,                  -(right + left) / (right - left),
+             0,                  2 / (top - bottom), -(top + bottom) / (top - bottom),
+             0,                  0,                  1}};
+}
+
+Mat3<float> orthoProjectionMatrix(float horizontal, float vertical)
+{
+    return orthoProjectionMatrix(-horizontal / 2, horizontal / 2, -vertical / 2, vertical / 2);
+}
+
 } // namespace gwars

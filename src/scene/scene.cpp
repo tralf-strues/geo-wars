@@ -27,6 +27,7 @@
 
 #include "scene/scene.hpp"
 #include "ecs/entity_view.hpp"
+#include <stdio.h>
 
 using namespace gwars;
 
@@ -38,17 +39,50 @@ void Scene::onUpdate(float dt) {}
 
 void Scene::render(Renderer& renderer)
 {
-    renderer.setColor(Color(10, 0, 10, 255));
-    renderer.clear();
-
-    const Vec2f origin{0, 0};
-    const Vec2f end{0.2, 0};
-    for (auto [entity, component] : getView<TransformComponent>(m_Entities))
+    /* Finding main camera */
+    bool                    mainCameraFound{false};
+    OrthographicCameraSpecs mainCameraSpecs;
+    Mat3f                   mainCameraViewMatrix;
+    for (auto [camera, component] : getView<CameraComponent>(m_Entities))
     {
-        Vec2f originResult = component.calculateMatrix() * Vec3f(origin, 1);
-        Vec2f endResult    = component.calculateMatrix() * Vec3f(end, 1);
+        assert(camera.hasComponent<TransformComponent>());
 
-        renderer.setColor(0xFFFF00FF);
-        renderer.drawLine(originResult, endResult, 2);
+        if (!component.isMain)
+        {
+            continue;
+        }
+
+        if (mainCameraFound)
+        {
+            printf("Second main camera has been detected! Using the first detected camera!\n");
+        }
+        else
+        {
+            mainCameraFound      = true;
+            mainCameraSpecs      = component.cameraSpecs;
+            mainCameraViewMatrix = camera.getComponent<TransformComponent>().calculateInverseMatrix();
+        }
     }
+
+    if (!mainCameraFound)
+    {
+        printf("No main camera detected!\n");
+        return;
+    }
+
+    renderer.beginScene(mainCameraSpecs, mainCameraViewMatrix);
+
+    renderer.clear(Color(10, 0, 10, 255));
+
+    for (auto [line, component] : getView<LineComponent>(m_Entities))
+    {
+        assert(line.hasComponent<TransformComponent>());
+
+        Line worldSpaceLine = component.line;
+        worldSpaceLine.from = line.getComponent<TransformComponent>().calculateMatrix() * Vec3f(worldSpaceLine.from);
+        worldSpaceLine.to   = line.getComponent<TransformComponent>().calculateMatrix() * Vec3f(worldSpaceLine.to);
+        renderer.drawLine(worldSpaceLine);
+    }
+
+    renderer.endScene();
 }

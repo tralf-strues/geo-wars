@@ -28,7 +28,9 @@
 #pragma once
 
 #include "math/vec3.hpp"
+#include "renderer/camera.hpp"
 #include "renderer/color.hpp"
+#include "renderer/draw_primitives.hpp"
 
 namespace gwars {
 
@@ -51,6 +53,15 @@ struct FrameBuffer
     operator Color*();
 };
 
+struct RendererScenePassData
+{
+    OrthographicCameraSpecs cameraSpecs;
+    Mat3f                   viewMatrix;
+    Mat3f                   projectionViewMatrix;
+
+    void recalculateProjectionViewMatrix();
+};
+
 /**
  * @brief Basic 2D renderer.
  *
@@ -65,36 +76,40 @@ class Renderer
 public:
     Renderer(FrameBuffer& frameBuffer);
 
-    void clear();
-    void setColor(Color color);
     void setViewport(const Viewport& viewport);
 
-    void drawLine(Vec2f from, Vec2f to, float thickness);
+    void beginScene(const OrthographicCameraSpecs& cameraSpecs, const Mat3f& viewMatrix);
+    void endScene();
+
+    void clear(Color color);
+
+    void drawLine(const Line& line);
+    void drawPoint();
 
 private:
-    inline Vec2f ndcToFrameBuffer(Vec2f ndc) const
-    {
-        return Vec2f(m_Viewport.x + static_cast<float>(ndc.x * m_Viewport.width),
-                     m_Viewport.y + static_cast<float>(ndc.y * m_Viewport.height));
-    }
-
     inline void putPixel(Vec2i pixel, Color color)
     {
         if (correctPixel(pixel))
         {
-            m_FrameBuffer[(m_FrameBuffer.height - pixel.y - 1) * m_FrameBuffer.width + pixel.x] = color;
+            m_FrameBuffer[(static_cast<int32_t>(m_FrameBuffer.height) - pixel.y - 1)
+                              * static_cast<int32_t>(m_FrameBuffer.width)
+                          + pixel.x]
+                = color;
         }
     }
 
     inline Color getPixel(Vec2i pixel) const
     {
-        return correctPixel(pixel) ? m_FrameBuffer[(m_FrameBuffer.height - pixel.y - 1) * m_FrameBuffer.width + pixel.x]
+        return correctPixel(pixel) ? m_FrameBuffer[(static_cast<int32_t>(m_FrameBuffer.height) - pixel.y - 1)
+                                                       * static_cast<int32_t>(m_FrameBuffer.width)
+                                                   + pixel.x]
                                    : Color(0);
     }
 
     inline bool correctPixel(Vec2i pixel) const
     {
-        return pixel.x >= 0 && pixel.x < m_FrameBuffer.width && pixel.y >= 0 && pixel.y < m_FrameBuffer.height;
+        return pixel.x >= 0 && pixel.x < static_cast<int32_t>(m_FrameBuffer.width) && pixel.y >= 0
+               && pixel.y < static_cast<int32_t>(m_FrameBuffer.height);
     }
 
     /**
@@ -110,10 +125,16 @@ private:
      */
     void putPixelBlended(Vec2i pixel, Vec3f rgb, float alpha);
 
+    inline Vec2f ndcToFrameBuffer(Vec2f ndc) const
+    {
+        return Vec2f(m_Viewport.x + static_cast<float>(ndc.x * m_Viewport.width),
+                     m_Viewport.y + static_cast<float>(ndc.y * m_Viewport.height));
+    }
+
 private:
-    FrameBuffer& m_FrameBuffer;
-    Color        m_Color;
-    Viewport     m_Viewport;
+    FrameBuffer&          m_FrameBuffer;
+    Viewport              m_Viewport;
+    RendererScenePassData m_ScenePassData;
 };
 
 } // namespace gwars

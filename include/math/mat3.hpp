@@ -221,6 +221,28 @@ Mat3<float> scaleMatrix(Vec2<float> scale);
  */
 Mat3<float> translationMatrix(Vec2<float> translation);
 
+/**
+ * @brief Create an orthographic projection matrix.
+ * 
+ * @param left
+ * @param right
+ * @param bottom
+ * @param top
+ * 
+ * @return Orthographic projection matrix.
+ */
+Mat3<float> orthoProjectionMatrix(float left, float right, float bottom, float top);
+
+/**
+ * @brief Convenience function for calculating orthographic projection.
+ * 
+ * @param horizontal Half right value in ortho projection (left := -horizontal/2).
+ * @param vertical Half top value in ortho projection (bottom := -vertical/2).
+ *
+ * @return Orthographic projection matrix.
+ */
+Mat3<float> orthoProjectionMatrix(float horizontal, float vertical);
+
 using Mat3f = Mat3<float>;
 
 } // namespace gwars

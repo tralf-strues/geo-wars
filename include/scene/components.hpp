@@ -28,6 +28,8 @@
 #pragma once
 
 #include "math/mat3.hpp"
+#include "renderer/camera.hpp"
+#include "renderer/draw_primitives.hpp"
 
 namespace gwars {
 
@@ -59,6 +61,26 @@ struct TransformComponent
     Mat3f calculateTranslationMatrix() const { return gwars::translationMatrix(translation); }
     Mat3f calculateRotationMatrix() const { return gwars::rotationMatrix(rotation); }
     Mat3f calculateScaleMatrix() const { return gwars::scaleMatrix(scale); }
+};
+
+struct CameraComponent
+{
+    OrthographicCameraSpecs cameraSpecs;
+    bool                    isMain;
+
+    CameraComponent() = default;
+    CameraComponent(const OrthographicCameraSpecs& cameraSpecs, bool isMain = false)
+        : cameraSpecs(cameraSpecs), isMain(isMain)
+    {
+    }
+};
+
+struct LineComponent
+{
+    Line line;
+
+    LineComponent() = default;
+    LineComponent(const Line& line) : line(line) {}
 };
 
 } // namespace gwars

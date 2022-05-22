@@ -31,6 +31,8 @@ AlwaysBreakTemplateDeclarations: Yes
 # AlwaysBreakAfterReturnType: None
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortEnumsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: Never
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AlwaysBreakBeforeMultilineStrings: false

@@ -36,11 +36,17 @@ Entity g_Line;
 void GameLayer::onInit()
 {
     g_Line = m_GameScene.createEntity();
-    g_Line.createComponent<TransformComponent>(Vec2f{0.2, 0.2});
+    g_Line.createComponent<TransformComponent>();
+    g_Line.getComponent<TransformComponent>().scale.x = 16;
+    g_Line.createComponent<LineComponent>();
+
+    Entity camera = m_GameScene.createEntity();
+    camera.createComponent<TransformComponent>(Vec2f(-100, -100));
+    camera.createComponent<CameraComponent>(OrthographicCameraSpecs(1024, 768), true);
 }
 
 void GameLayer::onUpdate(float dt)
-{ 
+{
     m_GameScene.onUpdate(dt);
     g_Line.getComponent<TransformComponent>().rotation += dt;
 }
