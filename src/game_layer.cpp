@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file mat3.cpp
- * @date 2022-05-21
+ * @file game_layer.cpp
+ * @date 2022-05-22
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -25,39 +25,29 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "math/mat3.hpp"
+#pragma once
+
+#include "game_layer.hpp"
 
 namespace gwars {
 
-float determinant(const Mat3<float>& matrix)
+Entity g_Line;
+
+void GameLayer::onInit()
 {
-    return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
-           matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
-           matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
+    g_Line = m_GameScene.createEntity();
+    g_Line.createComponent<TransformComponent>(Vec2f{0.2, 0.2});
 }
 
-Mat3<float> rotationMatrix(float angle)
-{
-    float cos = std::cos(angle);
-    float sin = std::sin(angle);
-
-    return {{cos, -sin, 0,
-             sin,  cos, 0,
-               0,    0, 1}};
+void GameLayer::onUpdate(float dt)
+{ 
+    m_GameScene.onUpdate(dt);
+    g_Line.getComponent<TransformComponent>().rotation += dt;
 }
 
-Mat3<float> scaleMatrix(Vec2<float> scale)
+void GameLayer::onRender(Renderer& renderer)
 {
-    return {{scale.x,        0, 0,
-                   0,  scale.y, 0,
-                   0,        0, 1}};
-}
-
-Mat3<float> translationMatrix(Vec2<float> translation)
-{
-    return {{1, 0, translation.x,
-             0, 1, translation.y,
-             0, 0,             1}};
+    m_GameScene.render(renderer);
 }
 
 } // namespace gwars

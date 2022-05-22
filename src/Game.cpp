@@ -4,8 +4,7 @@
 
 #include <stdio.h>
 
-#include "renderer/renderer.hpp"
-#include "math/mat3.hpp"
+#include "game_layer.hpp"
 
 //
 //  You are free to modify this file
@@ -22,10 +21,13 @@ using namespace gwars;
 
 FrameBuffer g_FrameBuffer{reinterpret_cast<Color*>(buffer), SCREEN_WIDTH, SCREEN_HEIGHT};
 Renderer g_Renderer(g_FrameBuffer);
+GameLayer* g_GameLayer;
 
 // initialize game data in this function
 void initialize()
 {
+  g_GameLayer = new GameLayer();
+  g_GameLayer->onInit();
 }
 
 // this function is called to update game data,
@@ -35,6 +37,7 @@ void act(float dt)
   if (is_key_pressed(VK_ESCAPE))
     schedule_quit_game();
 
+  g_GameLayer->onUpdate(dt);
 }
 
 // fill buffer in this function
@@ -44,19 +47,12 @@ void draw()
   // clear backbuffer
   memset(buffer, 0, SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(uint32_t));
 
-  Vec2f origin{0.5, 0.5};
-  static float angle = 0;
-
-  Vec2f to = origin + Vec2f(rotationMatrix(angle) * Vec3f(0.2, 0, 1));
-
-  g_Renderer.setColor(0xFFFF00FF);
-  g_Renderer.drawLine(origin, to, 2);
-
-  angle += 0.01;
+  g_GameLayer->onRender(g_Renderer);
 }
 
 // free game data in this function
 void finalize()
 {
+  delete g_GameLayer;
 }
 

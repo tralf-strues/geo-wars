@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file mat3.cpp
- * @date 2022-05-21
+ * @file entity.hpp
+ * @date 2022-05-22
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -25,39 +25,37 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "math/mat3.hpp"
+#pragma once
+
+#include "ecs/entity_manager.hpp"
 
 namespace gwars {
 
-float determinant(const Mat3<float>& matrix)
+class Entity
 {
-    return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
-           matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
-           matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
-}
+public:
+    Entity() = default;
+    Entity(EntityId id, EntityManager& manager);
 
-Mat3<float> rotationMatrix(float angle)
-{
-    float cos = std::cos(angle);
-    float sin = std::sin(angle);
+    void destroy();
 
-    return {{cos, -sin, 0,
-             sin,  cos, 0,
-               0,    0, 1}};
-}
+    template<typename T, typename... Args>
+    void createComponent(Args&&... args);
 
-Mat3<float> scaleMatrix(Vec2<float> scale)
-{
-    return {{scale.x,        0, 0,
-                   0,  scale.y, 0,
-                   0,        0, 1}};
-}
+    template<typename T>
+    void removeComponent();
 
-Mat3<float> translationMatrix(Vec2<float> translation)
-{
-    return {{1, 0, translation.x,
-             0, 1, translation.y,
-             0, 0,             1}};
-}
+    template<typename T>
+    T& getComponent();
+
+    template<typename T>
+    bool hasComponent();
+
+private:
+    EntityId m_Id{INVALID_ENTITY_ID};
+    EntityManager* m_Manager{nullptr};
+};
 
 } // namespace gwars
+
+#include "ecs/entity.ipp"

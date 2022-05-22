@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file mat3.cpp
- * @date 2022-05-21
+ * @file entity_manager.cpp
+ * @date 2022-05-22
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -25,39 +25,36 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "math/mat3.hpp"
+#include <cassert>
+#include "ecs/entity_manager.hpp"
 
-namespace gwars {
+using namespace gwars;
 
-float determinant(const Mat3<float>& matrix)
+EntityId EntityManager::createEntity()
 {
-    return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
-           matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
-           matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
+    EntityId id = m_NextEntityId++;
+    m_Entities.emplace(id, ComponentMap{});
+    return id;
 }
 
-Mat3<float> rotationMatrix(float angle)
+void EntityManager::removeEntity(EntityId id)
 {
-    float cos = std::cos(angle);
-    float sin = std::sin(angle);
+    assert(m_Entities.find(id) != m_Entities.end());
 
-    return {{cos, -sin, 0,
-             sin,  cos, 0,
-               0,    0, 1}};
+    for (auto [componentTypeId, entityMap] : m_Entities[id])
+    {
+        IComponentHolder* holderToRemove = &entityMap[id];
+        m_Components[componentTypeId].erase(id);
+        delete holderToRemove;
+    }
+
+    m_Entities.erase(id);
 }
 
-Mat3<float> scaleMatrix(Vec2<float> scale)
+void EntityManager::clear()
 {
-    return {{scale.x,        0, 0,
-                   0,  scale.y, 0,
-                   0,        0, 1}};
+    for (auto [entityId, componentMap] : m_Entities)
+    {
+        removeEntity(entityId);
+    }
 }
-
-Mat3<float> translationMatrix(Vec2<float> translation)
-{
-    return {{1, 0, translation.x,
-             0, 1, translation.y,
-             0, 0,             1}};
-}
-
-} // namespace gwars

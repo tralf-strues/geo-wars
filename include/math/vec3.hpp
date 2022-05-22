@@ -62,7 +62,7 @@ struct Vec3
         T elems[3];
     };
 
-    Vec3(const Vec2<T>& vector) : x(vector.x), y(vector.y), z(1) {}
+    Vec3(const Vec2<T>& vector, T z = 1) : x(vector.x), y(vector.y), z(z) {}
     Vec3(const T& x = 0, const T& y = 0, const T& z = 0) : x(x), y(y), z(z) {}
 
     T& operator[](size_t element)

@@ -1,0 +1,10 @@
+target_sources(gwars
+  PUBLIC
+    ${GWARS_SOURCE_DIR}/include/ecs/component_holder.hpp
+    ${GWARS_SOURCE_DIR}/include/ecs/entity_manager.hpp
+    ${GWARS_SOURCE_DIR}/include/ecs/entity_view.hpp
+    ${GWARS_SOURCE_DIR}/include/ecs/entity.hpp
+  PRIVATE
+    ${GWARS_SOURCE_DIR}/src/ecs/entity_manager.cpp
+    ${GWARS_SOURCE_DIR}/src/ecs/entity.cpp
+  )

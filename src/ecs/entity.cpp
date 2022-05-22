@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file mat3.cpp
- * @date 2022-05-21
+ * @file entity.cpp
+ * @date 2022-05-22
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -25,39 +25,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "math/mat3.hpp"
+#include "ecs/entity.hpp"
 
-namespace gwars {
+using namespace gwars;
 
-float determinant(const Mat3<float>& matrix)
-{
-    return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
-           matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
-           matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
-}
+Entity::Entity(EntityId id, EntityManager& manager) : m_Id(id), m_Manager(&manager) {}
 
-Mat3<float> rotationMatrix(float angle)
-{
-    float cos = std::cos(angle);
-    float sin = std::sin(angle);
-
-    return {{cos, -sin, 0,
-             sin,  cos, 0,
-               0,    0, 1}};
-}
-
-Mat3<float> scaleMatrix(Vec2<float> scale)
-{
-    return {{scale.x,        0, 0,
-                   0,  scale.y, 0,
-                   0,        0, 1}};
-}
-
-Mat3<float> translationMatrix(Vec2<float> translation)
-{
-    return {{1, 0, translation.x,
-             0, 1, translation.y,
-             0, 0,             1}};
-}
-
-} // namespace gwars
+void Entity::destroy() { m_Manager->removeEntity(m_Id); }

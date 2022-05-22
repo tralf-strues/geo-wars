@@ -10,5 +10,7 @@ target_sources(gwars
     ${GWARS_SOURCE_DIR}/src/Game.cpp
   )
 
+add_subdirectory(ecs)
 add_subdirectory(math)
 add_subdirectory(renderer)
+add_subdirectory(scene)

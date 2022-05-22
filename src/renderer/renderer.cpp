@@ -32,6 +32,12 @@
 
 using namespace gwars;
 
+Viewport::Viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) : x(x), y(y), width(width), height(height)
+{
+}
+
+FrameBuffer::operator Color*() { return data; }
+
 //==================================================================================================
 // Utility functions
 //==================================================================================================
@@ -50,6 +56,11 @@ struct Colorf
 //==================================================================================================
 // Basic Renderer api
 //==================================================================================================
+Renderer::Renderer(FrameBuffer& frameBuffer)
+    : m_FrameBuffer(frameBuffer), m_Viewport{0, 0, m_FrameBuffer.width, m_FrameBuffer.height}
+{
+}
+
 void Renderer::clear()
 {
     const uint32_t pixels = m_FrameBuffer.width * m_FrameBuffer.height;

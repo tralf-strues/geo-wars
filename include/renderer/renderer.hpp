@@ -39,7 +39,7 @@ struct Viewport
     uint32_t width{0};
     uint32_t height{0};
 
-    Viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) : x(x), y(y), width(width), height(height) {}
+    Viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 };
 
 struct FrameBuffer
@@ -48,7 +48,7 @@ struct FrameBuffer
     uint32_t width{0};
     uint32_t height{0};
 
-    operator Color*() { return data; }
+    operator Color*();
 };
 
 /**
@@ -63,10 +63,7 @@ struct FrameBuffer
 class Renderer
 {
 public:
-    Renderer(FrameBuffer& frameBuffer)
-        : m_FrameBuffer(frameBuffer), m_Viewport{0, 0, m_FrameBuffer.width, m_FrameBuffer.height}
-    {
-    }
+    Renderer(FrameBuffer& frameBuffer);
 
     void clear();
     void setColor(Color color);
@@ -83,11 +80,21 @@ private:
 
     inline void putPixel(Vec2i pixel, Color color)
     {
-        m_FrameBuffer[(m_FrameBuffer.height - pixel.y - 1) * m_FrameBuffer.width + pixel.x] = color;
+        if (correctPixel(pixel))
+        {
+            m_FrameBuffer[(m_FrameBuffer.height - pixel.y - 1) * m_FrameBuffer.width + pixel.x] = color;
+        }
     }
+
     inline Color getPixel(Vec2i pixel) const
     {
-        return m_FrameBuffer[(m_FrameBuffer.height - pixel.y - 1) * m_FrameBuffer.width + pixel.x];
+        return correctPixel(pixel) ? m_FrameBuffer[(m_FrameBuffer.height - pixel.y - 1) * m_FrameBuffer.width + pixel.x]
+                                   : Color(0);
+    }
+
+    inline bool correctPixel(Vec2i pixel) const
+    {
+        return pixel.x >= 0 && pixel.x < m_FrameBuffer.width && pixel.y >= 0 && pixel.y < m_FrameBuffer.height;
     }
 
     /**

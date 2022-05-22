@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file mat3.cpp
- * @date 2022-05-21
+ * @file entity_manager.hpp
+ * @date 2022-05-22
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -25,39 +25,48 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "math/mat3.hpp"
+#pragma once
+
+#include "ecs/component_holder.hpp"
+#include <unordered_map>
 
 namespace gwars {
 
-float determinant(const Mat3<float>& matrix)
-{
-    return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
-           matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
-           matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
-}
+using EntityId                       = uint32_t;
+constexpr EntityId INVALID_ENTITY_ID = 0;
 
-Mat3<float> rotationMatrix(float angle)
-{
-    float cos = std::cos(angle);
-    float sin = std::sin(angle);
+using EntityMap    = std::unordered_map<EntityId, IComponentHolder*>;
+using ComponentMap = std::unordered_map<ComponentTypeId, IComponentHolder*>;
 
-    return {{cos, -sin, 0,
-             sin,  cos, 0,
-               0,    0, 1}};
-}
-
-Mat3<float> scaleMatrix(Vec2<float> scale)
+class EntityManager
 {
-    return {{scale.x,        0, 0,
-                   0,  scale.y, 0,
-                   0,        0, 1}};
-}
+public:
+    EntityId createEntity();
+    void     removeEntity(EntityId id);
 
-Mat3<float> translationMatrix(Vec2<float> translation)
-{
-    return {{1, 0, translation.x,
-             0, 1, translation.y,
-             0, 0,             1}};
-}
+    void clear();
+
+    template<typename T, typename... Args>
+    void createComponent(EntityId id, Args&&... args);
+
+    template<typename T>
+    void removeComponent(EntityId id);
+
+    template<typename T>
+    T& getComponent(EntityId id);
+
+    template<typename T>
+    bool hasComponent(EntityId id);
+
+    template<typename T>
+    EntityMap& getEntityMap();
+
+private:
+    std::unordered_map<EntityId, ComponentMap>     m_Entities;
+    std::unordered_map<ComponentTypeId, EntityMap> m_Components;
+    uint32_t                                       m_NextEntityId{1};
+};
 
 } // namespace gwars
+
+#include "ecs/entity_manager.ipp"

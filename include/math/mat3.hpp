@@ -155,6 +155,22 @@ Mat3<T> operator*(const Mat3<T>& matrix, T scalar)
 }
 
 template<typename T>
+Mat3<T> transposeMatrix(const Mat3<T>& matrix)
+{
+    Mat3<T> transpose;
+
+    for (size_t row = 0; row < MAT3_SIZE; row++)
+    {
+        for (size_t col = 0; col < MAT3_SIZE; col++)
+        {
+            transpose[row][col] = matrix[col][row];
+        }
+    }
+
+    return transpose;
+}
+
+template<typename T>
 Mat3<T> identityMatrix(T diagonal)
 {
     Mat3<T> matrix;
@@ -204,5 +220,7 @@ Mat3<float> scaleMatrix(Vec2<float> scale);
  * @return Translation matrix.
  */
 Mat3<float> translationMatrix(Vec2<float> translation);
+
+using Mat3f = Mat3<float>;
 
 } // namespace gwars

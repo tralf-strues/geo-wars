@@ -1,6 +1,6 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file mat3.cpp
+ * @file component_holder.hpp
  * @date 2022-05-21
  *
  * The MIT License (MIT)
@@ -25,39 +25,38 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "math/mat3.hpp"
+#pragma once
+
+#include <inttypes.h>
 
 namespace gwars {
 
-float determinant(const Mat3<float>& matrix)
-{
-    return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
-           matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
-           matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
-}
+using ComponentTypeId                          = uint64_t;
+constexpr ComponentTypeId INVALID_COMPONENT_ID = 0;
 
-Mat3<float> rotationMatrix(float angle)
+class IComponentHolder
 {
-    float cos = std::cos(angle);
-    float sin = std::sin(angle);
+public:
+    virtual ~IComponentHolder() = default;
+};
 
-    return {{cos, -sin, 0,
-             sin,  cos, 0,
-               0,    0, 1}};
-}
-
-Mat3<float> scaleMatrix(Vec2<float> scale)
+template<typename T>
+class ComponentHolder : public IComponentHolder
 {
-    return {{scale.x,        0, 0,
-                   0,  scale.y, 0,
-                   0,        0, 1}};
-}
+public:
+    template<typename... Args>
+    ComponentHolder(Args&&... args);
 
-Mat3<float> translationMatrix(Vec2<float> translation)
-{
-    return {{1, 0, translation.x,
-             0, 1, translation.y,
-             0, 0,             1}};
-}
+    ~ComponentHolder() override = default;
+
+    T& get();
+    static ComponentTypeId getTypeId();
+
+protected:
+    static ComponentTypeId s_TypeId;
+    T m_Component;
+};
 
 } // namespace gwars
+
+#include "ecs/component_holder.ipp"
