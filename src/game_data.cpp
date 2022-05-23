@@ -30,7 +30,8 @@
 
 namespace gwars {
 
-const Polygon PLAYER_SPACESHIP_MODEL = loadPolygon("assets/player_spaceship.txt");
+const Polygon PLAYER_SPACESHIP_MODEL            = loadPolygon("assets/player_spaceship.txt");
+const Polygon PLAYER_SPACESHIP_PROJECTILE_MODEL = loadPolygon("assets/player_spaceship_projectile.txt");
 
 //==================================================================================================
 // Game Scripts
@@ -39,6 +40,11 @@ const Vec2f PlayerControlScript::FORWARD                    = Vec2f(0, 1);
 const float PlayerControlScript::FORWARD_ENGINE_FORCE       = 75;
 const float PlayerControlScript::PERPENDICULAR_ENGINE_FORCE = PlayerControlScript::FORWARD_ENGINE_FORCE;
 const float PlayerControlScript::FRICTION                   = 1;
+const Vec2f PlayerControlScript::LEFT_GUN_POSITION          = Vec2f(-1.15, 1.005);
+const Vec2f PlayerControlScript::RIGHT_GUN_POSITION         = Vec2f(-PlayerControlScript::LEFT_GUN_POSITION.x,
+                                                            PlayerControlScript::LEFT_GUN_POSITION.y);
+const float PlayerControlScript::PROJECTILE_VELOCITY        = 250;
+const float PlayerControlScript::RECHARGE_TIME              = 0.3f;
 
 void PlayerControlScript::onAttach(Entity entity, EventDispatcher& eventDispatcher)
 {
@@ -46,6 +52,8 @@ void PlayerControlScript::onAttach(Entity entity, EventDispatcher& eventDispatch
     eventDispatcher.getSink<KeyPressedEvent>().addHandler<&PlayerControlScript::onKeyPressed>(*this);
     eventDispatcher.getSink<KeyReleasedEvent>().addHandler<&PlayerControlScript::onKeyReleased>(*this);
     eventDispatcher.getSink<MouseMoveEvent>().addHandler<&PlayerControlScript::onMouseMoved>(*this);
+    eventDispatcher.getSink<MouseButtonPressedEvent>().addHandler<&PlayerControlScript::onMouseButtonPressed>(*this);
+    eventDispatcher.getSink<MouseButtonReleasedEvent>().addHandler<&PlayerControlScript::onMouseButtonReleased>(*this);
 }
 
 void PlayerControlScript::onDetach(Entity entity, EventDispatcher& eventDispatcher)
@@ -53,6 +61,9 @@ void PlayerControlScript::onDetach(Entity entity, EventDispatcher& eventDispatch
     eventDispatcher.getSink<KeyPressedEvent>().removeHandler<&PlayerControlScript::onKeyPressed>(*this);
     eventDispatcher.getSink<KeyReleasedEvent>().removeHandler<&PlayerControlScript::onKeyReleased>(*this);
     eventDispatcher.getSink<MouseMoveEvent>().removeHandler<&PlayerControlScript::onMouseMoved>(*this);
+    eventDispatcher.getSink<MouseButtonPressedEvent>().removeHandler<&PlayerControlScript::onMouseButtonPressed>(*this);
+    eventDispatcher.getSink<MouseButtonReleasedEvent>().removeHandler<&PlayerControlScript::onMouseButtonReleased>(
+        *this);
 }
 
 void PlayerControlScript::onUpdate(float dt)
@@ -69,6 +80,28 @@ void PlayerControlScript::onUpdate(float dt)
                               : Vec2f(0, 0);
 
     physicsComponent.force = engineForce + frictionForce;
+
+    if (m_Shooting && m_Recharge <= 0)
+    {
+        shoot(LEFT_GUN_POSITION, physicsComponent.velocity + forward * PROJECTILE_VELOCITY);
+        shoot(RIGHT_GUN_POSITION, physicsComponent.velocity + forward * PROJECTILE_VELOCITY);
+        m_Recharge = RECHARGE_TIME;
+    }
+    else
+    {
+        m_Recharge -= dt;
+    }
+}
+
+void PlayerControlScript::shoot(Vec2f position, Vec2f velocity)
+{
+    TransformComponent transform{m_Entity.getComponent<TransformComponent>()};
+    transform.translation = transform.calculateMatrix() * Vec3f(position, 1);
+
+    Entity projectileLeft = m_Scene.createEntity();
+    projectileLeft.createComponent<TransformComponent>(transform);
+    projectileLeft.createComponent<PolygonComponent>(PLAYER_SPACESHIP_PROJECTILE_MODEL);
+    projectileLeft.createComponent<PhysicsComponent>(velocity);
 }
 
 Vec2f PlayerControlScript::calculateForward()
@@ -123,6 +156,16 @@ void PlayerControlScript::onMouseMoved(const MouseMoveEvent& event)
     {
         transform.rotation = M_PI - atanf(forward.x / forward.y);
     }
+}
+
+void PlayerControlScript::onMouseButtonPressed(const MouseButtonPressedEvent& event)
+{
+    m_Shooting = true;
+}
+
+void PlayerControlScript::onMouseButtonReleased(const MouseButtonReleasedEvent& event)
+{
+    m_Shooting = false;
 }
 
 } // namespace gwars

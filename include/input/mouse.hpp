@@ -40,4 +40,16 @@ struct MouseMoveEvent
     MouseMoveEvent(float x, float y) : x(x), y(y) {}
 };
 
+struct MouseButtonPressedEvent
+{
+    uint32_t button;
+    MouseButtonPressedEvent(uint32_t button = 0) : button(button) {}
+};
+
+struct MouseButtonReleasedEvent
+{
+    uint32_t button;
+    MouseButtonReleasedEvent(uint32_t button = 0) : button(button) {}
+};
+
 } // namespace gwars

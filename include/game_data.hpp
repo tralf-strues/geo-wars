@@ -35,6 +35,7 @@
 namespace gwars {
 
 extern const Polygon PLAYER_SPACESHIP_MODEL;
+extern const Polygon PLAYER_SPACESHIP_PROJECTILE_MODEL;
 
 //==================================================================================================
 // Game Scripts
@@ -55,17 +56,27 @@ private:
     static const float FORWARD_ENGINE_FORCE;
     static const float PERPENDICULAR_ENGINE_FORCE;
     static const float FRICTION;
+    static const Vec2f LEFT_GUN_POSITION;
+    static const Vec2f RIGHT_GUN_POSITION;
+    static const float PROJECTILE_VELOCITY;
+    static const float RECHARGE_TIME;
+
+    void shoot(Vec2f position, Vec2f velocity);
 
     Vec2f calculateForward();
 
     void onKeyPressed(const KeyPressedEvent& event);
     void onKeyReleased(const KeyReleasedEvent& event);
     void onMouseMoved(const MouseMoveEvent& event);
+    void onMouseButtonPressed(const MouseButtonPressedEvent& event);
+    void onMouseButtonReleased(const MouseButtonReleasedEvent& event);
 
 private:
     Entity m_Entity;
     Scene& m_Scene;
     Vec2f  m_EngineForce{0, 0};
+    bool   m_Shooting{false};
+    float  m_Recharge{0};
 };
 
 } // namespace gwars

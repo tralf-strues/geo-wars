@@ -10,12 +10,15 @@
 
 using namespace gwars;
 
+constexpr size_t MOUSE_BUTTONS_COUNT = 2;
+
 FrameBuffer     g_FrameBuffer{reinterpret_cast<Color*>(buffer), SCREEN_WIDTH, SCREEN_HEIGHT};
 Renderer        g_Renderer(g_FrameBuffer);
 EventDispatcher g_EventDispatcher;
 GameLayer*      g_GameLayer;
 Vec2f           g_MousePos{0, 0};
 bool            g_KeyPressed[static_cast<uint32_t>(Key::Total)];
+bool            g_MouseButtonPressed[MOUSE_BUTTONS_COUNT];
 
 void processKeyEvent(uint32_t platformKey, Key key)
 {
@@ -38,6 +41,20 @@ void processMouseMoveEvent()
     g_EventDispatcher.fireEvent<MouseMoveEvent>(g_MousePos.x, g_MousePos.y);
 }
 
+void processMouseButtonEvent(uint32_t button)
+{
+    if (is_mouse_button_pressed(button) && !g_MouseButtonPressed[button])
+    {
+        g_EventDispatcher.fireEvent<MouseButtonPressedEvent>(button);
+        g_MouseButtonPressed[button] = true;
+    }
+    else if (!is_mouse_button_pressed(button) && g_MouseButtonPressed[button])
+    {
+        g_EventDispatcher.fireEvent<MouseButtonReleasedEvent>(button);
+        g_MouseButtonPressed[button] = false;
+    }
+}
+
 void processInputEvents()
 {
     processKeyEvent(VK_ESCAPE, Key::Esc);
@@ -49,6 +66,11 @@ void processInputEvents()
     processKeyEvent(VK_RETURN, Key::Return);
 
     processMouseMoveEvent();
+
+    for (uint32_t mouseButton = 0; mouseButton < MOUSE_BUTTONS_COUNT; ++mouseButton)
+    {
+        processMouseButtonEvent(mouseButton);
+    }
 }
 
 void initialize()
@@ -56,6 +78,11 @@ void initialize()
     for (uint32_t i = 0; i < static_cast<uint32_t>(Key::Total); ++i)
     {
         g_KeyPressed[i] = false;
+    }
+
+    for (uint32_t i = 0; i < MOUSE_BUTTONS_COUNT; ++i)
+    {
+        g_MouseButtonPressed[i] = false;
     }
 
     g_GameLayer = new GameLayer(g_EventDispatcher);
