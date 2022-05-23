@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "ecs/entity_manager.hpp"
+#include "ecs/entity.hpp"
 #include "events/event_dispatcher.hpp"
 #include "renderer/renderer.hpp"
 #include "scene/components.hpp"
@@ -44,6 +44,7 @@ public:
     Entity           createEntity();
     EntityManager&   getEntityManager();
     EventDispatcher& getEventDispatcher();
+    Entity           getMainCamera();
 
     void onInit();
 
@@ -54,9 +55,12 @@ private:
     void onScriptAdded(const EventComponentConstruct<ScriptComponent>& event);
     void onScriptRemoved(const EventComponentRemove<ScriptComponent>& event);
 
+    void onCameraAdded(const EventComponentConstruct<CameraComponent>& event);
+
 private:
     EntityManager    m_Entities;
     EventDispatcher& m_EventDispatcher;
+    Entity           m_MainCamera;
 };
 
 } // namespace gwars

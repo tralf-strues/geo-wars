@@ -32,4 +32,87 @@ namespace gwars {
 
 const Polygon PLAYER_SPACESHIP_MODEL = loadPolygon("assets/player_spaceship.txt");
 
+//==================================================================================================
+// Game Scripts
+//==================================================================================================
+const Vec2f PlayerControlScript::FORWARD = Vec2f(0, 1);
+
+void PlayerControlScript::onAttach(Entity entity, EventDispatcher& eventDispatcher)
+{
+    m_Entity = entity;
+    eventDispatcher.getSink<KeyPressedEvent>().addHandler<&PlayerControlScript::onKeyPressed>(*this);
+    eventDispatcher.getSink<MouseMoveEvent>().addHandler<&PlayerControlScript::onMouseMoved>(*this);
+}
+
+void PlayerControlScript::onDetach(Entity entity, EventDispatcher& eventDispatcher)
+{
+    eventDispatcher.getSink<KeyPressedEvent>().removeHandler<&PlayerControlScript::onKeyPressed>(*this);
+    eventDispatcher.getSink<MouseMoveEvent>().removeHandler<&PlayerControlScript::onMouseMoved>(*this);
+}
+
+void PlayerControlScript::onUpdate(float dt)
+{
+    assert(m_Entity.hasComponent<TransformComponent>());
+
+    TransformComponent& transform = m_Entity.getComponent<TransformComponent>();
+    transform.translation += m_Velocity * dt;
+    // transform.rotation += 0.5 * dt;
+}
+
+void PlayerControlScript::onKeyPressed(const KeyPressedEvent& event)
+{
+    switch (event.key)
+    {
+        case Key::Left:
+        {
+            m_Velocity.x -= 1;
+            break;
+        }
+        case Key::Right:
+        {
+            m_Velocity.x += 1;
+            break;
+        }
+        case Key::Down:
+        {
+            m_Velocity.y -= 1;
+            break;
+        }
+        case Key::Up:
+        {
+            m_Velocity.y += 1;
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+}
+
+void PlayerControlScript::onMouseMoved(const MouseMoveEvent& event)
+{
+    TransformComponent& transform = m_Entity.getComponent<TransformComponent>();
+
+    Entity mainCamera = m_Scene.getMainCamera();
+
+    Vec2f world = mainCamera.getComponent<TransformComponent>().calculateMatrix()
+                  * mainCamera.getComponent<CameraComponent>().cameraSpecs.calculateInverseProjectionMatrix()
+                  * Vec3f(event.x, event.y, 1);
+    Vec2f forward = normalize(world - transform.translation);
+
+    if (forward.y == 0)
+    {
+        transform.rotation = (forward.x >= 0) ? -M_PI / 2 : M_PI / 2;
+    }
+    else if (forward.y > 0)
+    {
+        transform.rotation = -atanf(forward.x / forward.y);
+    }
+    else
+    {
+        transform.rotation = M_PI - atanf(forward.x / forward.y);
+    }
+}
+
 } // namespace gwars

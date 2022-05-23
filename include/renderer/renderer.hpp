@@ -86,23 +86,17 @@ public:
     void drawLine(Vec2f from, Vec2f to, Color color, float thickness, const Mat3f& transform);
     void drawPolygon(const Polygon& polygon, const Mat3f& transform);
 
-private:
     inline void putPixel(Vec2i pixel, Color color)
     {
         if (correctPixel(pixel))
         {
-            m_FrameBuffer[(static_cast<int32_t>(m_FrameBuffer.height) - pixel.y - 1)
-                              * static_cast<int32_t>(m_FrameBuffer.width)
-                          + pixel.x]
-                = color;
+            m_FrameBuffer[pixel.y * static_cast<int32_t>(m_FrameBuffer.width) + pixel.x] = color;
         }
     }
 
     inline Color getPixel(Vec2i pixel) const
     {
-        return correctPixel(pixel) ? m_FrameBuffer[(static_cast<int32_t>(m_FrameBuffer.height) - pixel.y - 1)
-                                                       * static_cast<int32_t>(m_FrameBuffer.width)
-                                                   + pixel.x]
+        return correctPixel(pixel) ? m_FrameBuffer[pixel.y * static_cast<int32_t>(m_FrameBuffer.width) + pixel.x]
                                    : Color(0);
     }
 
@@ -127,8 +121,18 @@ private:
 
     inline Vec2f ndcToFrameBuffer(Vec2f ndc) const
     {
-        return Vec2f(m_Viewport.x + static_cast<float>(ndc.x * m_Viewport.width),
-                     m_Viewport.y + static_cast<float>(ndc.y * m_Viewport.height));
+        float halfWidth  = m_Viewport.width / 2;
+        float halfHeight = m_Viewport.height / 2;
+        return Vec2f(m_Viewport.x + static_cast<float>(halfWidth + ndc.x * halfWidth),
+                     m_Viewport.y + m_Viewport.height - static_cast<float>(halfHeight + ndc.y * halfHeight));
+    }
+
+    inline Vec2f frameBufferToNdc(Vec2f pixel) const
+    {
+        float halfWidth  = m_Viewport.width / 2;
+        float halfHeight = m_Viewport.height / 2;
+        return Vec2f((pixel.x - m_Viewport.x - halfWidth) / halfWidth,
+                     (m_Viewport.y + halfHeight - pixel.y) / halfHeight);
     }
 
 private:

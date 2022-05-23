@@ -6,6 +6,7 @@
 
 #include "game_layer.hpp"
 #include "input/keyboard.hpp"
+#include "input/mouse.hpp"
 
 using namespace gwars;
 
@@ -13,6 +14,7 @@ FrameBuffer     g_FrameBuffer{reinterpret_cast<Color*>(buffer), SCREEN_WIDTH, SC
 Renderer        g_Renderer(g_FrameBuffer);
 EventDispatcher g_EventDispatcher;
 GameLayer*      g_GameLayer;
+Vec2f           g_MousePos{0, 0};
 
 void fireKeyPressedEvent(uint32_t platformKey, Key key)
 {
@@ -20,6 +22,13 @@ void fireKeyPressedEvent(uint32_t platformKey, Key key)
     {
         g_EventDispatcher.fireEvent<KeyPressedEvent>(key);
     }
+}
+
+void fireMouseMoveEvent()
+{
+    g_MousePos = g_Renderer.frameBufferToNdc(Vec2f(get_cursor_x(), get_cursor_y()));
+    g_EventDispatcher.fireEvent<MouseMoveEvent>(g_MousePos.x, g_MousePos.y);
+    printf("Mouse moved: %f, %f\n", g_MousePos.x, g_MousePos.y);
 }
 
 void processInputEvents()
@@ -31,6 +40,8 @@ void processInputEvents()
     fireKeyPressedEvent(VK_RIGHT, Key::Right);
     fireKeyPressedEvent(VK_DOWN, Key::Down);
     fireKeyPressedEvent(VK_RETURN, Key::Return);
+
+    fireMouseMoveEvent();
 }
 
 class EventSystemTester

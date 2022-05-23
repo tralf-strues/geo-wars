@@ -25,8 +25,6 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
 #include "renderer/draw_primitives.hpp"
 
 namespace gwars {

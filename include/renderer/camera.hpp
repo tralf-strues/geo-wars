@@ -40,6 +40,7 @@ struct OrthographicCameraSpecs
     OrthographicCameraSpecs(float horizontal, float vertical) : horizontal(horizontal), vertical(vertical) {}
 
     Mat3f calculateProjectionMatrix() const { return orthoProjectionMatrix(horizontal, vertical); }
+    Mat3f calculateInverseProjectionMatrix() const { return orthoProjectionMatrix(4 / horizontal, 4 / vertical); }
 };
 
 } // namespace gwars

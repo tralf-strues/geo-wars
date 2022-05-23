@@ -132,7 +132,7 @@ Mat3<T> operator*(const Mat3<T>& first, const Mat3<T>& second)
 template<typename T>
 Vec3<T> operator*(const Mat3<T>& matrix, const Vec3<T>& vector)
 {
-    Vec3<T> product;
+    Vec3<T> product{0, 0, 0};
 
     for (size_t row = 0; row < MAT3_SIZE; row++)
     {

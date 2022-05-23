@@ -196,7 +196,7 @@ template<typename T>
 Vec2<T> normalize(const Vec2<T>& vector)
 {
     float len = length(vector);
-    assert(len != 0);
+    if (len == 0) { return Vec2<T>(0, 0); }
 
     return vector / len;
 }

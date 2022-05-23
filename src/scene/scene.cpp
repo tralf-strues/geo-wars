@@ -37,10 +37,12 @@ Entity Scene::createEntity() { return Entity(m_Entities.createEntity(), m_Entiti
 
 EntityManager&   Scene::getEntityManager() { return m_Entities; }
 EventDispatcher& Scene::getEventDispatcher() { return m_EventDispatcher; }
+Entity           Scene::getMainCamera() { return m_MainCamera; }
 
 void Scene::onInit()
 {
     m_Entities.onConstruct<ScriptComponent>().addHandler<&Scene::onScriptAdded>(*this);
+    m_Entities.onConstruct<CameraComponent>().addHandler<&Scene::onCameraAdded>(*this);
 }
 
 void Scene::onScriptAdded(const EventComponentConstruct<ScriptComponent>& event)
@@ -53,6 +55,15 @@ void Scene::onScriptRemoved(const EventComponentRemove<ScriptComponent>& event)
 {
     event.component.nativeScript->onDetach(Entity(event.entityId, m_Entities), m_EventDispatcher);
     printf("Script detached!\n");
+}
+
+void Scene::onCameraAdded(const EventComponentConstruct<CameraComponent>& event)
+{
+    if (event.component.isMain)
+    {
+        m_MainCamera = Entity(event.entityId, m_Entities);
+        printf("Main camera found!\n");
+    }
 }
 
 void Scene::onUpdate(float dt)
