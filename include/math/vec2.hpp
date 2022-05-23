@@ -50,11 +50,6 @@ struct Vec2
     Vec2() = default;
     Vec2(const T& x, const T& y) : x(x), y(y) {}
 
-    template<typename U = float>
-    Vec2<int32_t>(Vec2<U> vector) : x(vector.x), y(vector.y)
-    {
-    }
-
     Vec2& operator+=(const Vec2& rhs)
     {
         x += rhs.x;

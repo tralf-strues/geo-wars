@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <cassert>
+
 namespace gwars {
 
 template<typename T>
