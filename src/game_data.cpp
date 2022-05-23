@@ -33,20 +33,26 @@ namespace gwars {
 const Polygon SPACESHIP_MODEL            = loadPolygon("assets/player_spaceship.txt");
 const Polygon SPACESHIP_PROJECTILE_MODEL = loadPolygon("assets/player_spaceship_projectile.txt");
 
-//==================================================================================================
-// Game Scripts
-//==================================================================================================
 const Vec2f SPACESHIP_FORWARD                    = Vec2f(0, 1);
 const float SPACESHIP_FORWARD_ENGINE_FORCE       = 75;
 const float SPACESHIP_PERPENDICULAR_ENGINE_FORCE = SPACESHIP_FORWARD_ENGINE_FORCE;
 const float SPACESHIP_FRICTION                   = 1;
 const Vec2f SPACESHIP_LEFT_GUN_POSITION          = Vec2f(-1.15, 1.005);
 const Vec2f SPACESHIP_RIGHT_GUN_POSITION         = Vec2f(-SPACESHIP_LEFT_GUN_POSITION.x, SPACESHIP_LEFT_GUN_POSITION.y);
-const float SPACESHIP_PROJECTILE_VELOCITY        = 250;
+const float SPACESHIP_PROJECTILE_VELOCITY        = 350;
 const float SPACESHIP_RECHARGE_TIME              = 0.3f;
-const Vec2f SPACESHIP_BOUNDING_SPHERE_TRANSLATION = Vec2f(0, 0.7);
-const float SPACESHIP_BOUNDING_SPHERE_RADIUS      = sqrtf(2.2525);
+const Vec2f SPACESHIP_BOUNDING_SPHERE_TRANSLATION            = Vec2f(0, 0.7);
+const float SPACESHIP_BOUNDING_SPHERE_RADIUS                 = sqrtf(2.2525);
+const Vec2f SPACESHIP_PROJECTILE_BOUNDING_SPHERE_TRANSLATION = Vec2f(0, 0);
+const float SPACESHIP_PROJECTILE_BOUNDING_SPHERE_RADIUS      = 0.1;
 
+const Polygon UFO_MODEL                       = loadPolygon("assets/ufo.txt");
+const Vec2f   UFO_BOUNDING_SPHERE_TRANSLATION = Vec2f(0, 0.2);
+const float   UFO_BOUNDING_SPHERE_RADIUS      = sqrtf(1.73);
+
+//==================================================================================================
+// Game Scripts
+//==================================================================================================
 void PlayerControlScript::onAttach(Entity entity, EventDispatcher& eventDispatcher)
 {
     m_Entity = entity;
@@ -103,6 +109,8 @@ void PlayerControlScript::shoot(Vec2f position, Vec2f velocity)
     projectile.createComponent<TransformComponent>(transform);
     projectile.createComponent<PolygonComponent>(SPACESHIP_PROJECTILE_MODEL);
     projectile.createComponent<PhysicsComponent>(velocity);
+    projectile.createComponent<BoundingSphereComponent>(SPACESHIP_PROJECTILE_BOUNDING_SPHERE_RADIUS,
+                                                        SPACESHIP_PROJECTILE_BOUNDING_SPHERE_TRANSLATION);
 }
 
 Vec2f PlayerControlScript::calculateForward()

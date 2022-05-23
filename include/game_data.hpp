@@ -37,16 +37,22 @@ namespace gwars {
 extern const Polygon SPACESHIP_MODEL;
 extern const Polygon SPACESHIP_PROJECTILE_MODEL;
 
-static const Vec2f SPACESHIP_FORWARD;
-static const float SPACESHIP_FORWARD_ENGINE_FORCE;
-static const float SPACESHIP_PERPENDICULAR_ENGINE_FORCE;
-static const float SPACESHIP_FRICTION;
-static const Vec2f SPACESHIP_LEFT_GUN_POSITION;
-static const Vec2f SPACESHIP_RIGHT_GUN_POSITION;
-static const float SPACESHIP_PROJECTILE_VELOCITY;
-static const float SPACESHIP_RECHARGE_TIME;
-static const Vec2f SPACESHIP_BOUNDING_SPHERE_TRANSLATION;
-static const float SPACESHIP_BOUNDING_SPHERE_RADIUS;
+extern const Vec2f SPACESHIP_FORWARD;
+extern const float SPACESHIP_FORWARD_ENGINE_FORCE;
+extern const float SPACESHIP_PERPENDICULAR_ENGINE_FORCE;
+extern const float SPACESHIP_FRICTION;
+extern const Vec2f SPACESHIP_LEFT_GUN_POSITION;
+extern const Vec2f SPACESHIP_RIGHT_GUN_POSITION;
+extern const float SPACESHIP_PROJECTILE_VELOCITY;
+extern const float SPACESHIP_RECHARGE_TIME;
+extern const Vec2f SPACESHIP_BOUNDING_SPHERE_TRANSLATION;
+extern const float SPACESHIP_BOUNDING_SPHERE_RADIUS;
+extern const Vec2f SPACESHIP_PROJECTILE_BOUNDING_SPHERE_TRANSLATION;
+extern const float SPACESHIP_PROJECTILE_BOUNDING_SPHERE_RADIUS;
+
+extern const Polygon UFO_MODEL;
+extern const Vec2f   UFO_BOUNDING_SPHERE_TRANSLATION;
+extern const float   UFO_BOUNDING_SPHERE_RADIUS;
 
 //==================================================================================================
 // Game Scripts

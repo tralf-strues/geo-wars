@@ -48,6 +48,13 @@ void GameLayer::onInit()
     player.createComponent<BoundingSphereComponent>(SPACESHIP_BOUNDING_SPHERE_RADIUS,
                                                     SPACESHIP_BOUNDING_SPHERE_TRANSLATION);
 
+    Entity ufo = m_GameScene.createEntity();
+    ufo.createComponent<TransformComponent>(Vec2f(-50, -100));
+    ufo.getComponent<TransformComponent>().scale = Vec2f(30, 30);
+    ufo.createComponent<PolygonComponent>(UFO_MODEL);
+    ufo.createComponent<PhysicsComponent>();
+    ufo.createComponent<BoundingSphereComponent>(UFO_BOUNDING_SPHERE_RADIUS, UFO_BOUNDING_SPHERE_TRANSLATION);
+
     Entity camera = m_GameScene.createEntity();
     camera.createComponent<TransformComponent>();
     camera.createComponent<CameraComponent>(OrthographicCameraSpecs(1024, 768), true);
