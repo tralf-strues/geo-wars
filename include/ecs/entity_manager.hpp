@@ -28,6 +28,7 @@
 #pragma once
 
 #include "ecs/component_holder.hpp"
+#include "events/event_dispatcher.hpp"
 #include <unordered_map>
 
 namespace gwars {
@@ -37,6 +38,24 @@ constexpr EntityId INVALID_ENTITY_ID = 0;
 
 using EntityMap    = std::unordered_map<EntityId, IComponentHolder*>;
 using ComponentMap = std::unordered_map<ComponentTypeId, IComponentHolder*>;
+
+template<typename T>
+struct EventComponentConstruct
+{
+    T&       component;
+    EntityId entityId;
+
+    EventComponentConstruct(T& component, EntityId entityId);
+};
+
+template<typename T>
+struct EventComponentRemove
+{
+    T&       component;
+    EntityId entityId;
+
+    EventComponentRemove(T& component, EntityId entityId);
+};
 
 class EntityManager
 {
@@ -61,10 +80,14 @@ public:
     template<typename T>
     EntityMap& getEntityMap();
 
+    template<typename T>
+    EventSink<EventComponentConstruct<T>>& onConstruct();
+
 private:
     std::unordered_map<EntityId, ComponentMap>     m_Entities;
     std::unordered_map<ComponentTypeId, EntityMap> m_Components;
     uint32_t                                       m_NextEntityId{1};
+    EventDispatcher                                m_EventDispatcher;
 };
 
 } // namespace gwars

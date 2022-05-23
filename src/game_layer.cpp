@@ -26,6 +26,8 @@
  */
 
 #include "game_layer.hpp"
+#include "input/keyboard.hpp"
+#include "input/mouse.hpp"
 
 namespace gwars {
 
@@ -33,12 +35,59 @@ Entity g_Line;
 
 GameLayer::GameLayer(EventDispatcher& eventDispatcher) : m_GameScene(eventDispatcher) {}
 
+class MovementScript : public INativeScript
+{
+public:
+    MovementScript() = default;
+
+    virtual ~MovementScript() override = default;
+
+    virtual void onAttach(Entity entity, EventDispatcher& eventDispatcher) override
+    {
+        m_Entity = entity;
+        eventDispatcher.getSink<KeyPressedEvent>().addHandler<&MovementScript::onKeyPressed>(*this);
+    }
+
+    virtual void onDetach(Entity entity, EventDispatcher& eventDispatcher) override
+    {
+        eventDispatcher.getSink<KeyPressedEvent>().removeHandler<&MovementScript::onKeyPressed>(*this);
+    }
+
+    virtual void onUpdate(float dt) override
+    {
+        assert(m_Entity.hasComponent<TransformComponent>());
+
+        TransformComponent& transform = m_Entity.getComponent<TransformComponent>();
+        transform.translation += m_Velocity * dt;
+    }
+
+private:
+    void onKeyPressed(const KeyPressedEvent& event)
+    {
+        switch (event.key)
+        {
+            case Key::Left:  { m_Velocity.x -= 1; break; }
+            case Key::Right: { m_Velocity.x += 1; break; }
+            case Key::Down:  { m_Velocity.y -= 1; break; }
+            case Key::Up:    { m_Velocity.y += 1; break; }
+            default: { break; }
+        }
+    }
+
+private:
+    Entity m_Entity;
+    Vec2f m_Velocity{0, 0};
+};
+
 void GameLayer::onInit()
 {
+    m_GameScene.onInit();
+
     g_Line = m_GameScene.createEntity();
     g_Line.createComponent<TransformComponent>();
     g_Line.getComponent<TransformComponent>().scale.x = 16;
     g_Line.createComponent<LineComponent>();
+    g_Line.createComponent<ScriptComponent>(new MovementScript());
 
     Entity camera = m_GameScene.createEntity();
     camera.createComponent<TransformComponent>(Vec2f(-100, -100));

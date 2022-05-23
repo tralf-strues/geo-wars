@@ -30,6 +30,7 @@
 #include "math/mat3.hpp"
 #include "renderer/camera.hpp"
 #include "renderer/draw_primitives.hpp"
+#include "scene/script.hpp"
 
 namespace gwars {
 
@@ -81,6 +82,15 @@ struct LineComponent
 
     LineComponent() = default;
     LineComponent(const Line& line) : line(line) {}
+};
+
+struct ScriptComponent
+{
+    INativeScript* nativeScript;
+
+    ScriptComponent(INativeScript* nativeScript = nullptr) : nativeScript(nativeScript) {}
+
+    ~ScriptComponent() { delete nativeScript; }
 };
 
 } // namespace gwars

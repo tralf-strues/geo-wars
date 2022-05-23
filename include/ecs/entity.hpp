@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "ecs/entity_manager.hpp"
 
 namespace gwars {
@@ -52,7 +54,7 @@ public:
     bool hasComponent();
 
 private:
-    EntityId m_Id{INVALID_ENTITY_ID};
+    EntityId       m_Id{INVALID_ENTITY_ID};
     EntityManager* m_Manager{nullptr};
 };
 

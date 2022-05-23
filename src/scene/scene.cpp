@@ -35,9 +35,34 @@ Scene::Scene(EventDispatcher& eventDispatcher) : m_EventDispatcher(eventDispatch
 
 Entity Scene::createEntity() { return Entity(m_Entities.createEntity(), m_Entities); }
 
-EntityManager& Scene::getEntityManager() { return m_Entities; }
+EntityManager&   Scene::getEntityManager() { return m_Entities; }
+EventDispatcher& Scene::getEventDispatcher() { return m_EventDispatcher; }
 
-void Scene::onUpdate(float dt) {}
+void Scene::onInit()
+{
+    m_Entities.onConstruct<ScriptComponent>().addHandler<&Scene::onScriptAdded>(*this);
+}
+
+void Scene::onScriptAdded(const EventComponentConstruct<ScriptComponent>& event)
+{
+    event.component.nativeScript->onAttach(Entity(event.entityId, m_Entities), m_EventDispatcher);
+    printf("Script attached!\n");
+}
+
+void Scene::onScriptRemoved(const EventComponentRemove<ScriptComponent>& event)
+{
+    event.component.nativeScript->onDetach(Entity(event.entityId, m_Entities), m_EventDispatcher);
+    printf("Script detached!\n");
+}
+
+void Scene::onUpdate(float dt)
+{
+    /* Running native scripts */
+    for (auto [entity, scriptComponent] : getView<ScriptComponent>(m_Entities))
+    {
+        scriptComponent.nativeScript->onUpdate(dt);
+    }
+}
 
 void Scene::render(Renderer& renderer)
 {

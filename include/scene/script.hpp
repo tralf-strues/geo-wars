@@ -1,21 +1,21 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file scene.hpp
- * @date 2022-05-21
- *
+ * @file script.hpp
+ * @date 2022-05-23
+ * 
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,36 +27,19 @@
 
 #pragma once
 
-#include "ecs/entity_manager.hpp"
-#include "events/event_dispatcher.hpp"
-#include "renderer/renderer.hpp"
-#include "scene/components.hpp"
-
 namespace gwars {
 
 class Entity;
+class EventDispatcher;
 
-class Scene
+class INativeScript
 {
 public:
-    Scene(EventDispatcher& eventDispatcher);
+    virtual ~INativeScript() = default;
 
-    Entity           createEntity();
-    EntityManager&   getEntityManager();
-    EventDispatcher& getEventDispatcher();
-
-    void onInit();
-
-    void onUpdate(float dt);
-    void render(Renderer& renderer);
-
-private:
-    void onScriptAdded(const EventComponentConstruct<ScriptComponent>& event);
-    void onScriptRemoved(const EventComponentRemove<ScriptComponent>& event);
-
-private:
-    EntityManager    m_Entities;
-    EventDispatcher& m_EventDispatcher;
+    virtual void onAttach(Entity entity, EventDispatcher& eventDispatcher) = 0;
+    virtual void onDetach(Entity entity, EventDispatcher& eventDispatcher) = 0;
+    virtual void onUpdate(float dt) = 0;
 };
 
 } // namespace gwars
