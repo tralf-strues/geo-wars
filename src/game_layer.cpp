@@ -26,6 +26,7 @@
  */
 
 #include "game_layer.hpp"
+#include "game_data.hpp"
 #include "input/keyboard.hpp"
 #include "input/mouse.hpp"
 
@@ -108,6 +109,12 @@ void GameLayer::onInit()
     quad.getComponent<PolygonComponent>().polygon.color = 0xFFFF00FF;
     quad.getComponent<PolygonComponent>().polygon.thickness = 3;
     quad.createComponent<ScriptComponent>(new MovementScript());
+
+    Entity player = m_GameScene.createEntity();
+    player.createComponent<TransformComponent>(Vec2f(50, 50));
+    player.getComponent<TransformComponent>().scale = Vec2f(20, 20);
+    player.createComponent<PolygonComponent>(PLAYER_SPACESHIP_MODEL);
+    player.createComponent<ScriptComponent>(new MovementScript());
 
     Entity camera = m_GameScene.createEntity();
     camera.createComponent<TransformComponent>(Vec2f(-100, -100));
