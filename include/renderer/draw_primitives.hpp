@@ -35,9 +35,17 @@ namespace gwars {
 
 struct Polygon
 {
-    std::vector<Vec2f> vertices;
-    Color              color{0xFFFFFFFF};
-    float              thickness{1};
+    struct Vertex
+    {
+        Vec2f vertex;
+        bool  isBreak{false};
+
+        Vertex(const Vec2f& vertex = Vec2f{0, 0}, bool isBreak = false) : vertex(vertex), isBreak(isBreak) {}
+    };
+
+    std::vector<Vertex> vertices;
+    Color               color{0xFFFFFFFF};
+    float               thickness{1};
 
     static Polygon
     createLine(Vec2f from = Vec2f(0, 0), Vec2f to = Vec2f(1, 0), Color color = 0xFFFFFFFF, float thickness = 1);

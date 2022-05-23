@@ -58,8 +58,6 @@ Polygon loadPolygon(const std::string& filename)
         size_t   vertexPosStart;
         float    vertexPos[2];
 
-        printf("CurLine = \"%s\"\n", curLine.c_str());
-
         if (curLine.find("symmetry") != curLine.npos)
         {
             symmetryStart = curPoint;
@@ -84,7 +82,7 @@ Polygon loadPolygon(const std::string& filename)
 
     if (curPoint == 0)
     {
-        printf("No points found in \"%s\"\n", filename.c_str());
+        printf("No vertices found in \"%s\"\n", filename.c_str());
     }
 
     if (symmetryStart != -1)
@@ -92,9 +90,11 @@ Polygon loadPolygon(const std::string& filename)
         int32_t endVertex = polygon.vertices.size();
         for (int32_t vertex = endVertex - 1; vertex >= symmetryStart; --vertex)
         {
-            polygon.vertices.push_back(Vec2f(-polygon.vertices[vertex].x, polygon.vertices[vertex].y));
+            polygon.vertices.push_back(Vec2f(-polygon.vertices[vertex].vertex.x, polygon.vertices[vertex].vertex.y));
         }
     }
+
+    printf("Loaded polygon from \"%s\" (vertices_count = %lu)\n", filename.c_str(), polygon.vertices.size());
 
     return polygon;
 }

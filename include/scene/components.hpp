@@ -93,4 +93,13 @@ struct ScriptComponent
     ~ScriptComponent() { delete nativeScript; }
 };
 
+struct PhysicsComponent
+{
+    Vec2f velocity{0, 0};
+    Vec2f force{0, 0};
+    float mass{1};
+
+    PhysicsComponent(const Vec2f& velocity = Vec2f(0, 0)) : velocity(velocity) {}
+};
+
 } // namespace gwars

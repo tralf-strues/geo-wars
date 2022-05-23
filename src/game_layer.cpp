@@ -46,6 +46,7 @@ void GameLayer::onInit()
     player.getComponent<TransformComponent>().scale = Vec2f(15, 15);
     player.createComponent<PolygonComponent>(PLAYER_SPACESHIP_MODEL);
     player.createComponent<ScriptComponent>(new PlayerControlScript(m_GameScene));
+    player.createComponent<PhysicsComponent>();
 
     Entity camera = m_GameScene.createEntity();
     camera.createComponent<TransformComponent>();

@@ -207,6 +207,12 @@ T dot(const Vec2<T>& lhs, const Vec2<T>& rhs)
     return lhs.x * rhs.x + lhs.y * rhs.y;
 }
 
+template<typename T>
+Vec2<T> perpendicularCounterClockwise(const Vec2<T>& vector)
+{
+    return Vec2<T>(-vector.y, vector.x);
+}
+
 using Vec2u = Vec2<uint32_t>;
 using Vec2i = Vec2<int32_t>;
 using Vec2f = Vec2<float>;

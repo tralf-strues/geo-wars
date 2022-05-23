@@ -73,6 +73,15 @@ void Scene::onUpdate(float dt)
     {
         scriptComponent.nativeScript->onUpdate(dt);
     }
+
+    /* Physics simulation */
+    for (auto [entity, physicsComponent] : getView<PhysicsComponent>(m_Entities))
+    {
+        Vec2f acceleration = physicsComponent.force / physicsComponent.mass;
+        physicsComponent.velocity += acceleration * dt;
+
+        entity.getComponent<TransformComponent>().translation += physicsComponent.velocity * dt;
+    }
 }
 
 void Scene::render(Renderer& renderer)

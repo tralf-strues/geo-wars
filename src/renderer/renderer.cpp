@@ -153,8 +153,10 @@ void Renderer::drawPolygon(const Polygon& polygon, const Mat3f& transform)
 
     for (uint32_t vertex = 0; vertex < verticesCount; ++vertex)
     {
-        drawLine(polygon.vertices[vertex],
-                 polygon.vertices[(vertex + 1) % verticesCount],
+        if (polygon.vertices[vertex].isBreak || polygon.vertices[(vertex + 1) % verticesCount].isBreak) { continue; }
+
+        drawLine(polygon.vertices[vertex].vertex,
+                 polygon.vertices[(vertex + 1) % verticesCount].vertex,
                  polygon.color,
                  polygon.thickness,
                  transform);

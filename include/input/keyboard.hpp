@@ -52,4 +52,12 @@ struct KeyPressedEvent
     KeyPressedEvent(Key key) : key(key) {}
 };
 
+struct KeyReleasedEvent
+{
+    Key key{Key::Invalid};
+
+    KeyReleasedEvent() = default;
+    KeyReleasedEvent(Key key) : key(key) {}
+};
+
 } // namespace gwars

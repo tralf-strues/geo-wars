@@ -35,18 +35,23 @@ const Polygon PLAYER_SPACESHIP_MODEL = loadPolygon("assets/player_spaceship.txt"
 //==================================================================================================
 // Game Scripts
 //==================================================================================================
-const Vec2f PlayerControlScript::FORWARD = Vec2f(0, 1);
+const Vec2f PlayerControlScript::FORWARD                    = Vec2f(0, 1);
+const float PlayerControlScript::FORWARD_ENGINE_FORCE       = 75;
+const float PlayerControlScript::PERPENDICULAR_ENGINE_FORCE = PlayerControlScript::FORWARD_ENGINE_FORCE;
+const float PlayerControlScript::FRICTION                   = 1;
 
 void PlayerControlScript::onAttach(Entity entity, EventDispatcher& eventDispatcher)
 {
     m_Entity = entity;
     eventDispatcher.getSink<KeyPressedEvent>().addHandler<&PlayerControlScript::onKeyPressed>(*this);
+    eventDispatcher.getSink<KeyReleasedEvent>().addHandler<&PlayerControlScript::onKeyReleased>(*this);
     eventDispatcher.getSink<MouseMoveEvent>().addHandler<&PlayerControlScript::onMouseMoved>(*this);
 }
 
 void PlayerControlScript::onDetach(Entity entity, EventDispatcher& eventDispatcher)
 {
     eventDispatcher.getSink<KeyPressedEvent>().removeHandler<&PlayerControlScript::onKeyPressed>(*this);
+    eventDispatcher.getSink<KeyReleasedEvent>().removeHandler<&PlayerControlScript::onKeyReleased>(*this);
     eventDispatcher.getSink<MouseMoveEvent>().removeHandler<&PlayerControlScript::onMouseMoved>(*this);
 }
 
@@ -54,39 +59,44 @@ void PlayerControlScript::onUpdate(float dt)
 {
     assert(m_Entity.hasComponent<TransformComponent>());
 
-    TransformComponent& transform = m_Entity.getComponent<TransformComponent>();
-    transform.translation += m_Velocity * dt;
-    // transform.rotation += 0.5 * dt;
+    PhysicsComponent& physicsComponent = m_Entity.getComponent<PhysicsComponent>();
+    Vec2f             forward          = calculateForward();
+    Vec2f             right            = perpendicularCounterClockwise(forward);
+    Vec2f             engineForce      = forward * m_EngineForce.y + right * m_EngineForce.x;
+
+    Vec2f frictionForce = (lengthSquare(engineForce) == 0)
+                              ? -physicsComponent.mass * FRICTION * physicsComponent.velocity
+                              : Vec2f(0, 0);
+
+    physicsComponent.force = engineForce + frictionForce;
+}
+
+Vec2f PlayerControlScript::calculateForward()
+{
+    return m_Entity.getComponent<TransformComponent>().calculateRotationMatrix() * Vec3f(FORWARD, 1);
 }
 
 void PlayerControlScript::onKeyPressed(const KeyPressedEvent& event)
 {
     switch (event.key)
     {
-        case Key::Left:
-        {
-            m_Velocity.x -= 1;
-            break;
-        }
-        case Key::Right:
-        {
-            m_Velocity.x += 1;
-            break;
-        }
-        case Key::Down:
-        {
-            m_Velocity.y -= 1;
-            break;
-        }
-        case Key::Up:
-        {
-            m_Velocity.y += 1;
-            break;
-        }
-        default:
-        {
-            break;
-        }
+        case Key::Left:  { m_EngineForce.x -= PERPENDICULAR_ENGINE_FORCE; break; }
+        case Key::Right: { m_EngineForce.x += PERPENDICULAR_ENGINE_FORCE; break; }
+        case Key::Down:  { m_EngineForce.y -= FORWARD_ENGINE_FORCE; break; }
+        case Key::Up:    { m_EngineForce.y += FORWARD_ENGINE_FORCE; break; }
+        default:         { break; }
+    }
+}
+
+void PlayerControlScript::onKeyReleased(const KeyReleasedEvent& event)
+{
+    switch (event.key)
+    {
+        case Key::Left:  { m_EngineForce.x += PERPENDICULAR_ENGINE_FORCE; break; }
+        case Key::Right: { m_EngineForce.x -= PERPENDICULAR_ENGINE_FORCE; break; }
+        case Key::Down:  { m_EngineForce.y += FORWARD_ENGINE_FORCE; break; }
+        case Key::Up:    { m_EngineForce.y -= FORWARD_ENGINE_FORCE; break; }
+        default:         { break; }
     }
 }
 

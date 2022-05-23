@@ -52,14 +52,20 @@ public:
 
 private:
     static const Vec2f FORWARD;
+    static const float FORWARD_ENGINE_FORCE;
+    static const float PERPENDICULAR_ENGINE_FORCE;
+    static const float FRICTION;
+
+    Vec2f calculateForward();
 
     void onKeyPressed(const KeyPressedEvent& event);
+    void onKeyReleased(const KeyReleasedEvent& event);
     void onMouseMoved(const MouseMoveEvent& event);
 
 private:
     Entity m_Entity;
-    Vec2f  m_Velocity{0, 0};
     Scene& m_Scene;
+    Vec2f  m_EngineForce{0, 0};
 };
 
 } // namespace gwars

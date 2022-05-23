@@ -15,60 +15,51 @@ Renderer        g_Renderer(g_FrameBuffer);
 EventDispatcher g_EventDispatcher;
 GameLayer*      g_GameLayer;
 Vec2f           g_MousePos{0, 0};
+bool            g_KeyPressed[static_cast<uint32_t>(Key::Total)];
 
-void fireKeyPressedEvent(uint32_t platformKey, Key key)
+void processKeyEvent(uint32_t platformKey, Key key)
 {
-    if (is_key_pressed(platformKey))
+    uint32_t keyNumber = static_cast<uint32_t>(key);
+    if (is_key_pressed(platformKey) && !g_KeyPressed[keyNumber])
     {
         g_EventDispatcher.fireEvent<KeyPressedEvent>(key);
+        g_KeyPressed[keyNumber] = true;
+    }
+    else if (!is_key_pressed(platformKey) && g_KeyPressed[keyNumber])
+    {
+        g_EventDispatcher.fireEvent<KeyReleasedEvent>(key);
+        g_KeyPressed[keyNumber] = false;
     }
 }
 
-void fireMouseMoveEvent()
+void processMouseMoveEvent()
 {
     g_MousePos = g_Renderer.frameBufferToNdc(Vec2f(get_cursor_x(), get_cursor_y()));
     g_EventDispatcher.fireEvent<MouseMoveEvent>(g_MousePos.x, g_MousePos.y);
-    printf("Mouse moved: %f, %f\n", g_MousePos.x, g_MousePos.y);
 }
 
 void processInputEvents()
 {
-    fireKeyPressedEvent(VK_ESCAPE, Key::Esc);
-    fireKeyPressedEvent(VK_SPACE, Key::Space);
-    fireKeyPressedEvent(VK_LEFT, Key::Left);
-    fireKeyPressedEvent(VK_UP, Key::Up);
-    fireKeyPressedEvent(VK_RIGHT, Key::Right);
-    fireKeyPressedEvent(VK_DOWN, Key::Down);
-    fireKeyPressedEvent(VK_RETURN, Key::Return);
+    processKeyEvent(VK_ESCAPE, Key::Esc);
+    processKeyEvent(VK_SPACE, Key::Space);
+    processKeyEvent(VK_LEFT, Key::Left);
+    processKeyEvent(VK_UP, Key::Up);
+    processKeyEvent(VK_RIGHT, Key::Right);
+    processKeyEvent(VK_DOWN, Key::Down);
+    processKeyEvent(VK_RETURN, Key::Return);
 
-    fireMouseMoveEvent();
+    processMouseMoveEvent();
 }
 
-class EventSystemTester
-{
-public:
-    int x{0};
-
-    void onKeyPressed(const KeyPressedEvent& event)
-    {
-        printf("Key pressed [%d], EventSystemTester.x = %d\n", event.key, x);
-    }
-};
-
-void staticOnKeyPressed(const KeyPressedEvent& event)
-{
-    printf("Key pressed [%d] STATIC\n", event.key);
-}
-
-EventSystemTester g_Tester;
 void initialize()
 {
+    for (uint32_t i = 0; i < static_cast<uint32_t>(Key::Total); ++i)
+    {
+        g_KeyPressed[i] = false;
+    }
+
     g_GameLayer = new GameLayer(g_EventDispatcher);
     g_GameLayer->onInit();
-
-    g_Tester.x = 22;
-    g_EventDispatcher.getSink<KeyPressedEvent>().addHandler<&EventSystemTester::onKeyPressed>(g_Tester);
-    g_EventDispatcher.getSink<KeyPressedEvent>().addHandler<&staticOnKeyPressed>();
 }
 
 void act(float dt)
