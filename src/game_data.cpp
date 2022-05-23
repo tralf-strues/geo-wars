@@ -83,8 +83,8 @@ void PlayerControlScript::onUpdate(float dt)
 
     if (m_Shooting && m_Recharge <= 0)
     {
-        shoot(LEFT_GUN_POSITION, physicsComponent.velocity + forward * PROJECTILE_VELOCITY);
-        shoot(RIGHT_GUN_POSITION, physicsComponent.velocity + forward * PROJECTILE_VELOCITY);
+        shoot(LEFT_GUN_POSITION, forward * PROJECTILE_VELOCITY);
+        shoot(RIGHT_GUN_POSITION, forward * PROJECTILE_VELOCITY);
         m_Recharge = RECHARGE_TIME;
     }
     else
@@ -98,10 +98,10 @@ void PlayerControlScript::shoot(Vec2f position, Vec2f velocity)
     TransformComponent transform{m_Entity.getComponent<TransformComponent>()};
     transform.translation = transform.calculateMatrix() * Vec3f(position, 1);
 
-    Entity projectileLeft = m_Scene.createEntity();
-    projectileLeft.createComponent<TransformComponent>(transform);
-    projectileLeft.createComponent<PolygonComponent>(PLAYER_SPACESHIP_PROJECTILE_MODEL);
-    projectileLeft.createComponent<PhysicsComponent>(velocity);
+    Entity projectile = m_Scene.createEntity();
+    projectile.createComponent<TransformComponent>(transform);
+    projectile.createComponent<PolygonComponent>(PLAYER_SPACESHIP_PROJECTILE_MODEL);
+    projectile.createComponent<PhysicsComponent>(velocity);
 }
 
 Vec2f PlayerControlScript::calculateForward()
