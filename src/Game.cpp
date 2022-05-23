@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include <memory.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include <stdio.h>
 
@@ -75,6 +76,8 @@ void processInputEvents()
 
 void initialize()
 {
+    srand(time(nullptr));
+
     for (uint32_t i = 0; i < static_cast<uint32_t>(Key::Total); ++i)
     {
         g_KeyPressed[i] = false;
@@ -91,7 +94,7 @@ void initialize()
 
 void act(float dt)
 {
-    if (is_key_pressed(VK_ESCAPE))
+    if (is_key_pressed(VK_ESCAPE) || g_GameLayer->isStopped())
     {
         schedule_quit_game();
     }

@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file entity.hpp
- * @date 2022-05-22
+ * @file random.cpp
+ * @date 2022-05-23
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -25,43 +25,22 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include <stdint.h>
-
-#include "ecs/entity_manager.hpp"
+#include "utils/random.hpp"
+#include <stdlib.h>
+#include <time.h>
+#include <cassert>
 
 namespace gwars {
 
-class Entity
+float RandomNumberGenerator::randomNormalized()
 {
-public:
-    Entity() = default;
-    Entity(EntityId id, EntityManager& manager);
+    return (rand() % (int) (1e6 + 1)) / 1e6;
+}
 
-    void destroy();
-
-    template<typename T, typename... Args>
-    void createComponent(Args&&... args);
-
-    template<typename T>
-    void removeComponent();
-
-    template<typename T>
-    T& getComponent();
-
-    template<typename T>
-    bool hasComponent();
-
-    bool operator<(const Entity& other) const;
-    bool operator==(const Entity& other) const;
-    bool operator!=(const Entity& other) const;
-
-private:
-    EntityId       m_Id{INVALID_ENTITY_ID};
-    EntityManager* m_Manager{nullptr};
-};
+int RandomNumberGenerator::randomInRange(int from, int to)
+{
+    assert(from <= to);
+    return from + (rand() % (to - from + 1));
+}
 
 } // namespace gwars
-
-#include "ecs/entity.ipp"

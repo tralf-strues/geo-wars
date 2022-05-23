@@ -1,5 +1,5 @@
 color=rgba(226, 88, 34, 255)
-thickness=2.5
+thickness=1.5
 
-A=vec2(0,-0.1)
-B=vec2(0,0.1)
+A=vec2(0,-0.3)
+B=vec2(0,0.3)

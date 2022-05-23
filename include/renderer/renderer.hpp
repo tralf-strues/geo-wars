@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "math/vec3.hpp"
+#include "math/vec4.hpp"
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
 #include "renderer/draw_primitives.hpp"

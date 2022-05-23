@@ -27,8 +27,8 @@
 
 #pragma once
 
-#include "scene/components.hpp"
 #include "ecs/entity.hpp"
+#include "scene/components.hpp"
 #include "scene/scene.hpp"
 
 namespace gwars {
@@ -38,12 +38,16 @@ class GameLayer
 public:
     GameLayer(EventDispatcher& eventDispatcher);
 
+    bool isStopped() const;
+    void setStopped(bool stopped);
+
     void onInit();
     void onUpdate(float dt);
     void onRender(Renderer& renderer);
 
 private:
     Scene m_GameScene;
+    bool  m_Stopped{false};
 };
 
 } // namespace gwars

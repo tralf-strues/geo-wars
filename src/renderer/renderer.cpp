@@ -26,6 +26,7 @@
  */
 
 #include "renderer/renderer.hpp"
+#include "utils/float_compare.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -88,12 +89,18 @@ void Renderer::clear(Color color)
     }
 }
 
+#include <stdio.h>
 void Renderer::putPixelBlended(Vec2i pixel, Vec3f rgb, float alpha)
 {
-    assert(rgb.r >= 0.0f && rgb.r <= 255.0f);
-    assert(rgb.g >= 0.0f && rgb.g <= 255.0f);
-    assert(rgb.b >= 0.0f && rgb.b <= 255.0f);
-    assert(alpha >= 0.0f && alpha <= 1.0f);
+    if (cmpFloat(alpha, 0) < 0 || cmpFloat(alpha, 1) > 0)
+    {
+        printf("alpha = %f\n", alpha);
+    }
+
+    assert(cmpFloat(rgb.r, 0) >= 0 && cmpFloat(rgb.r, 255) <= 0);
+    assert(cmpFloat(rgb.g, 0) >= 0 && cmpFloat(rgb.g, 255) <= 0);
+    assert(cmpFloat(rgb.b, 0) >= 0 && cmpFloat(rgb.b, 255) <= 0);
+    assert(cmpFloat(alpha, 0) >= 0 && cmpFloat(alpha, 1) <= 0);
 
     Colorf oldColor(getPixel(pixel));
 
@@ -110,6 +117,11 @@ void Renderer::putPixelBlended(Vec2i pixel, Vec3f rgb, float alpha)
 //==================================================================================================
 float capsuleSDF(Vec2f pixel, Vec2f from, Vec2f to, float thickness)
 {
+    if (to == from)
+    {
+        return 0;
+    }
+
     Vec2f fromToPixel = pixel - from;
     Vec2f line        = to - from;
 
@@ -153,7 +165,10 @@ void Renderer::drawPolygon(const Polygon& polygon, const Mat3f& transform)
 
     for (uint32_t vertex = 0; vertex < verticesCount; ++vertex)
     {
-        if (polygon.vertices[vertex].isBreak || polygon.vertices[(vertex + 1) % verticesCount].isBreak) { continue; }
+        if (polygon.vertices[vertex].isBreak || polygon.vertices[(vertex + 1) % verticesCount].isBreak)
+        {
+            continue;
+        }
 
         drawLine(polygon.vertices[vertex].vertex,
                  polygon.vertices[(vertex + 1) % verticesCount].vertex,

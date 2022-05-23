@@ -3,6 +3,7 @@ target_sources(gwars
     ${GWARS_SOURCE_DIR}/include/math/mat3.hpp
     ${GWARS_SOURCE_DIR}/include/math/vec2.hpp
     ${GWARS_SOURCE_DIR}/include/math/vec3.hpp
+    ${GWARS_SOURCE_DIR}/include/math/vec4.hpp
     PRIVATE
     ${GWARS_SOURCE_DIR}/src/math/mat3.cpp
   )

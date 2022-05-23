@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file color.hpp
- * @date 2022-05-21
+ * @file particle_system.hpp
+ * @date 2022-05-23
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -27,42 +27,60 @@
 
 #pragma once
 
-#include "math/vec4.hpp"
-#include <stdint.h>
+#include "renderer/renderer.hpp"
 
 namespace gwars {
 
-class Color
+class ParticleSystem
 {
 public:
-    Color() = default;
-    Color(uint32_t color) : m_Color(color) {}
-    Color(uint32_t r, uint32_t g, uint32_t b, uint32_t a = 0xFF) : m_Color((a << 24u) + (r << 16u) + (g << 8u) + b) {}
-    Color(const Vec4f& normalizedRGBA)
-        : Color(normalizedRGBA.r * 0xFF, normalizedRGBA.g * 0xFF, normalizedRGBA.b * 0xFF, normalizedRGBA.a * 0xFF)
+    struct ParticleSpecs
     {
-    }
+        Vec2f origin;
+        Vec2f velocity;
+        Vec2f velocityVariation;
 
-    inline uint32_t getR() const { return getByte(2); }
-    inline uint32_t getG() const { return getByte(1); }
-    inline uint32_t getB() const { return getByte(0); }
-    inline uint32_t getA() const { return getByte(3); }
+        Vec4f colorBegin;
+        Vec4f colorEnd;
 
-    inline void setR(uint32_t r) { m_Color = (m_Color & ~(0xFF << 16u)) | (r << 16u); }
-    inline void setG(uint32_t g) { m_Color = (m_Color & ~(0xFF << 8u)) | (g << 8u); }
-    inline void setB(uint32_t b) { m_Color = (m_Color & ~(0xFF << 0u)) | (b << 0u); }
-    inline void setA(uint32_t a) { m_Color = (m_Color & ~(0xFF << 24u)) | (a << 24u); }
+        float sizeBegin{0.0f};
+        float sizeEnd{1.0f};
+        float sizeVariation{0.0f};
 
-    inline operator uint32_t() const { return m_Color; }
+        float lifetime{1.0f};
+    };
+
+    ParticleSystem(size_t poolSize, const Polygon& particlePolygon);
+
+    void onUpdate(float dt);
+    void onRender(Renderer& renderer);
+
+    void emit(const ParticleSpecs& particleSpecs);
 
 private:
-    inline uint32_t getByte(uint8_t byteNumber) const
+    struct Particle
     {
-        return (m_Color & (0xFFu << (8u * byteNumber))) >> (8u * byteNumber);
-    }
+        Vec2f translation;
+        Vec2f velocity;
+        float rotation{0.0f};
+        Vec4f colorBegin;
+        Vec4f colorEnd;
 
-private:
-    uint32_t m_Color{0}; // ARGB
+        float sizeBegin{0.0f};
+        float sizeEnd{1.0f};
+
+        float lifetime{1.0f};
+        float timeRemaining{0.0f};
+
+        bool active{false};
+    };
+
+    static constexpr float PARTICLE_ROTATION_RATE = 0.02f;
+
+    Polygon               m_ParticlePolygon;
+    std::vector<Particle> m_Particles;
+    uint32_t              m_NextParticle{0};
+
 };
 
 } // namespace gwars

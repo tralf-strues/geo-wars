@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file scene.hpp
- * @date 2022-05-21
+ * @file random.hpp
+ * @date 2022-05-23
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -27,55 +27,13 @@
 
 #pragma once
 
-#include "ecs/entity.hpp"
-#include "events/event_dispatcher.hpp"
-#include "renderer/renderer.hpp"
-#include "scene/components.hpp"
-#include <set>
-
 namespace gwars {
 
-struct CollisionEvent
-{
-    Entity firstEntity;
-    Entity secondEntity;
-
-    CollisionEvent() = default;
-    CollisionEvent(Entity firstEntity, Entity secondEntity);
-};
-
-class Scene
+class RandomNumberGenerator
 {
 public:
-    Scene(EventDispatcher& eventDispatcher);
-
-    Entity createEntity();
-    void   submitToRemoveEntity(Entity entity);
-
-    bool isSubmittedToRemove(Entity entity);
-
-    EntityManager&   getEntityManager();
-    EventDispatcher& getEventDispatcher();
-    Entity           getMainCamera();
-
-    bool isStopped() const;
-    void setStropped(bool stopped);
-
-    void onInit();
-    void onUpdate(float dt);
-    void render(Renderer& renderer);
-
-private:
-    void onScriptAdded(const EventComponentConstruct<ScriptComponent>& event);
-    void onScriptRemoved(const EventComponentRemove<ScriptComponent>& event);
-    void onCameraAdded(const EventComponentConstruct<CameraComponent>& event);
-
-private:
-    EntityManager    m_Entities;
-    EventDispatcher& m_EventDispatcher;
-    Entity           m_MainCamera;
-    std::set<Entity> m_EntitiesToRemove;
-    bool             m_Stopped{true};
+    static float randomNormalized();
+    static int randomInRange(int from, int to);
 };
 
 } // namespace gwars

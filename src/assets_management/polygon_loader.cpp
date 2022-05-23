@@ -34,7 +34,7 @@ namespace gwars {
 
 Polygon loadPolygon(const std::string& filename)
 {
-    printf("Loading polygon from \"%s\"\n", filename.c_str());
+    // printf("Loading polygon from \"%s\"\n", filename.c_str());
 
     std::ifstream stream(filename);
     if (stream.fail())
@@ -82,7 +82,7 @@ Polygon loadPolygon(const std::string& filename)
 
     if (curPoint == 0)
     {
-        printf("No vertices found in \"%s\"\n", filename.c_str());
+        // printf("No vertices found in \"%s\"\n", filename.c_str());
     }
 
     if (symmetryStart != -1)
@@ -94,7 +94,7 @@ Polygon loadPolygon(const std::string& filename)
         }
     }
 
-    printf("Loaded polygon from \"%s\" (vertices_count = %lu)\n", filename.c_str(), polygon.vertices.size());
+    // printf("Loaded polygon from \"%s\" (vertices_count = %lu)\n", filename.c_str(), polygon.vertices.size());
 
     return polygon;
 }

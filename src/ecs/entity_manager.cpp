@@ -41,11 +41,11 @@ void EntityManager::removeEntity(EntityId id)
 {
     assert(m_Entities.find(id) != m_Entities.end());
 
-    for (auto [componentTypeId, entityMap] : m_Entities[id])
+    for (auto [componentTypeId, holder] : m_Entities[id])
     {
-        IComponentHolder* holderToRemove = &entityMap[id];
+        // IComponentHolder* holderToRemove = &entityMap[id];
         m_Components[componentTypeId].erase(id);
-        delete holderToRemove;
+        delete holder;
     }
 
     m_Entities.erase(id);

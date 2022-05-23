@@ -30,6 +30,7 @@
 #include "math/mat3.hpp"
 #include "renderer/camera.hpp"
 #include "renderer/draw_primitives.hpp"
+#include "renderer/particle_system.hpp"
 #include "scene/script.hpp"
 
 namespace gwars {
@@ -112,6 +113,18 @@ struct BoundingSphereComponent
 
     BoundingSphereComponent(float msRadius = 1, Vec2f msTranslation = Vec2f(0, 0))
         : msTranslation(msTranslation), msRadius(msRadius)
+    {
+    }
+};
+
+bool boundingSpheresCollide(const BoundingSphereComponent& first, const BoundingSphereComponent& second);
+
+struct ParticleSystemComponent
+{
+    ParticleSystem particleSystem;
+
+    ParticleSystemComponent(size_t poolSize = 512, const Polygon& particlePolygon = Polygon::createLine())
+        : particleSystem(poolSize, particlePolygon)
     {
     }
 };
