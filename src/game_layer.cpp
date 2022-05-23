@@ -39,26 +39,21 @@ void GameLayer::onInit()
 {
     m_GameScene.onInit();
 
-    printf("GameLayer::onInit() started\n");
-
     Entity player = m_GameScene.createEntity();
     player.createComponent<TransformComponent>(Vec2f(50, 50));
     player.getComponent<TransformComponent>().scale = Vec2f(15, 15);
-    player.createComponent<PolygonComponent>(PLAYER_SPACESHIP_MODEL);
+    player.createComponent<PolygonComponent>(SPACESHIP_MODEL);
     player.createComponent<ScriptComponent>(new PlayerControlScript(m_GameScene));
     player.createComponent<PhysicsComponent>();
+    player.createComponent<BoundingSphereComponent>(SPACESHIP_BOUNDING_SPHERE_RADIUS,
+                                                    SPACESHIP_BOUNDING_SPHERE_TRANSLATION);
 
     Entity camera = m_GameScene.createEntity();
     camera.createComponent<TransformComponent>();
     camera.createComponent<CameraComponent>(OrthographicCameraSpecs(1024, 768), true);
-
-    printf("GameLayer::onInit() finished\n");
 }
 
-void GameLayer::onUpdate(float dt)
-{
-    m_GameScene.onUpdate(dt);
-}
+void GameLayer::onUpdate(float dt) { m_GameScene.onUpdate(dt); }
 
 void GameLayer::onRender(Renderer& renderer) { m_GameScene.render(renderer); }
 

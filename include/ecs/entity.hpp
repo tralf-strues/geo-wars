@@ -53,6 +53,8 @@ public:
     template<typename T>
     bool hasComponent();
 
+    bool operator==(const Entity& other) const;
+
 private:
     EntityId       m_Id{INVALID_ENTITY_ID};
     EntityManager* m_Manager{nullptr};

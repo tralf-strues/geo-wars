@@ -32,3 +32,5 @@ using namespace gwars;
 Entity::Entity(EntityId id, EntityManager& manager) : m_Id(id), m_Manager(&manager) {}
 
 void Entity::destroy() { m_Manager->removeEntity(m_Id); }
+
+bool Entity::operator==(const Entity& other) const { return m_Id == other.m_Id; }

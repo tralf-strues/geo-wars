@@ -31,6 +31,17 @@
 
 using namespace gwars;
 
+bool boundingSpheresCollide(const BoundingSphereComponent& first, const BoundingSphereComponent& second)
+{
+    return lengthSquare(second.wsTranslation - first.wsTranslation)
+           <= (second.wsRadius - first.wsRadius) * (second.wsRadius - first.wsRadius);
+}
+
+CollisionEvent::CollisionEvent(Entity firstEntity, Entity secondEntity)
+    : firstEntity(firstEntity), secondEntity(secondEntity)
+{
+}
+
 Scene::Scene(EventDispatcher& eventDispatcher) : m_EventDispatcher(eventDispatcher) {}
 
 Entity Scene::createEntity() { return Entity(m_Entities.createEntity(), m_Entities); }
@@ -81,6 +92,34 @@ void Scene::onUpdate(float dt)
         physicsComponent.velocity += acceleration * dt;
 
         entity.getComponent<TransformComponent>().translation += physicsComponent.velocity * dt;
+    }
+
+    for (auto [entity, boundingSphereComponent] : getView<BoundingSphereComponent>(m_Entities))
+    {
+        TransformComponent& transform = entity.getComponent<TransformComponent>();
+
+        boundingSphereComponent.wsTranslation = entity.getComponent<TransformComponent>().translation
+                                                + Vec2f(transform.calculateMatrix()
+                                                        * Vec3f(boundingSphereComponent.msTranslation, 1));
+        boundingSphereComponent.wsRadius = boundingSphereComponent.msRadius
+                                           * entity.getComponent<TransformComponent>().scale.x;
+    }
+
+    for (auto [entity1, boundingSphere1] : getView<BoundingSphereComponent>(m_Entities))
+    {
+        for (auto [entity2, boundingSphere2] : getView<BoundingSphereComponent>(m_Entities))
+        {
+            if (entity1 == entity2)
+            {
+                continue;
+            }
+
+            if (boundingSpheresCollide(boundingSphere1, boundingSphere2))
+            {
+                printf("Collision detected!\n");
+                m_EventDispatcher.fireEvent<CollisionEvent>(entity1, entity2);
+            }
+        }
     }
 }
 

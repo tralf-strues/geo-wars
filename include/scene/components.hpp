@@ -102,4 +102,18 @@ struct PhysicsComponent
     PhysicsComponent(const Vec2f& velocity = Vec2f(0, 0)) : velocity(velocity) {}
 };
 
+struct BoundingSphereComponent
+{
+    Vec2f msTranslation{0, 0};
+    float msRadius;
+
+    Vec2f wsTranslation{0, 0};
+    float wsRadius{0};
+
+    BoundingSphereComponent(float msRadius = 1, Vec2f msTranslation = Vec2f(0, 0))
+        : msTranslation(msTranslation), msRadius(msRadius)
+    {
+    }
+};
+
 } // namespace gwars

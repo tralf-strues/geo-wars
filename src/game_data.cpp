@@ -30,21 +30,22 @@
 
 namespace gwars {
 
-const Polygon PLAYER_SPACESHIP_MODEL            = loadPolygon("assets/player_spaceship.txt");
-const Polygon PLAYER_SPACESHIP_PROJECTILE_MODEL = loadPolygon("assets/player_spaceship_projectile.txt");
+const Polygon SPACESHIP_MODEL            = loadPolygon("assets/player_spaceship.txt");
+const Polygon SPACESHIP_PROJECTILE_MODEL = loadPolygon("assets/player_spaceship_projectile.txt");
 
 //==================================================================================================
 // Game Scripts
 //==================================================================================================
-const Vec2f PlayerControlScript::FORWARD                    = Vec2f(0, 1);
-const float PlayerControlScript::FORWARD_ENGINE_FORCE       = 75;
-const float PlayerControlScript::PERPENDICULAR_ENGINE_FORCE = PlayerControlScript::FORWARD_ENGINE_FORCE;
-const float PlayerControlScript::FRICTION                   = 1;
-const Vec2f PlayerControlScript::LEFT_GUN_POSITION          = Vec2f(-1.15, 1.005);
-const Vec2f PlayerControlScript::RIGHT_GUN_POSITION         = Vec2f(-PlayerControlScript::LEFT_GUN_POSITION.x,
-                                                            PlayerControlScript::LEFT_GUN_POSITION.y);
-const float PlayerControlScript::PROJECTILE_VELOCITY        = 250;
-const float PlayerControlScript::RECHARGE_TIME              = 0.3f;
+const Vec2f SPACESHIP_FORWARD                    = Vec2f(0, 1);
+const float SPACESHIP_FORWARD_ENGINE_FORCE       = 75;
+const float SPACESHIP_PERPENDICULAR_ENGINE_FORCE = SPACESHIP_FORWARD_ENGINE_FORCE;
+const float SPACESHIP_FRICTION                   = 1;
+const Vec2f SPACESHIP_LEFT_GUN_POSITION          = Vec2f(-1.15, 1.005);
+const Vec2f SPACESHIP_RIGHT_GUN_POSITION         = Vec2f(-SPACESHIP_LEFT_GUN_POSITION.x, SPACESHIP_LEFT_GUN_POSITION.y);
+const float SPACESHIP_PROJECTILE_VELOCITY        = 250;
+const float SPACESHIP_RECHARGE_TIME              = 0.3f;
+const Vec2f SPACESHIP_BOUNDING_SPHERE_TRANSLATION = Vec2f(0, 0.7);
+const float SPACESHIP_BOUNDING_SPHERE_RADIUS      = sqrtf(2.2525);
 
 void PlayerControlScript::onAttach(Entity entity, EventDispatcher& eventDispatcher)
 {
@@ -76,16 +77,16 @@ void PlayerControlScript::onUpdate(float dt)
     Vec2f             engineForce      = forward * m_EngineForce.y + right * m_EngineForce.x;
 
     Vec2f frictionForce = (lengthSquare(engineForce) == 0)
-                              ? -physicsComponent.mass * FRICTION * physicsComponent.velocity
+                              ? -physicsComponent.mass * SPACESHIP_FRICTION * physicsComponent.velocity
                               : Vec2f(0, 0);
 
     physicsComponent.force = engineForce + frictionForce;
 
     if (m_Shooting && m_Recharge <= 0)
     {
-        shoot(LEFT_GUN_POSITION, forward * PROJECTILE_VELOCITY);
-        shoot(RIGHT_GUN_POSITION, forward * PROJECTILE_VELOCITY);
-        m_Recharge = RECHARGE_TIME;
+        shoot(SPACESHIP_LEFT_GUN_POSITION, forward * SPACESHIP_PROJECTILE_VELOCITY);
+        shoot(SPACESHIP_RIGHT_GUN_POSITION, forward * SPACESHIP_PROJECTILE_VELOCITY);
+        m_Recharge = SPACESHIP_RECHARGE_TIME;
     }
     else
     {
@@ -100,23 +101,23 @@ void PlayerControlScript::shoot(Vec2f position, Vec2f velocity)
 
     Entity projectile = m_Scene.createEntity();
     projectile.createComponent<TransformComponent>(transform);
-    projectile.createComponent<PolygonComponent>(PLAYER_SPACESHIP_PROJECTILE_MODEL);
+    projectile.createComponent<PolygonComponent>(SPACESHIP_PROJECTILE_MODEL);
     projectile.createComponent<PhysicsComponent>(velocity);
 }
 
 Vec2f PlayerControlScript::calculateForward()
 {
-    return m_Entity.getComponent<TransformComponent>().calculateRotationMatrix() * Vec3f(FORWARD, 1);
+    return m_Entity.getComponent<TransformComponent>().calculateRotationMatrix() * Vec3f(SPACESHIP_FORWARD, 1);
 }
 
 void PlayerControlScript::onKeyPressed(const KeyPressedEvent& event)
 {
     switch (event.key)
     {
-        case Key::Left:  { m_EngineForce.x -= PERPENDICULAR_ENGINE_FORCE; break; }
-        case Key::Right: { m_EngineForce.x += PERPENDICULAR_ENGINE_FORCE; break; }
-        case Key::Down:  { m_EngineForce.y -= FORWARD_ENGINE_FORCE; break; }
-        case Key::Up:    { m_EngineForce.y += FORWARD_ENGINE_FORCE; break; }
+        case Key::Left:  { m_EngineForce.x -= SPACESHIP_PERPENDICULAR_ENGINE_FORCE; break; }
+        case Key::Right: { m_EngineForce.x += SPACESHIP_PERPENDICULAR_ENGINE_FORCE; break; }
+        case Key::Down:  { m_EngineForce.y -= SPACESHIP_FORWARD_ENGINE_FORCE; break; }
+        case Key::Up:    { m_EngineForce.y += SPACESHIP_FORWARD_ENGINE_FORCE; break; }
         default:         { break; }
     }
 }
@@ -125,10 +126,10 @@ void PlayerControlScript::onKeyReleased(const KeyReleasedEvent& event)
 {
     switch (event.key)
     {
-        case Key::Left:  { m_EngineForce.x += PERPENDICULAR_ENGINE_FORCE; break; }
-        case Key::Right: { m_EngineForce.x -= PERPENDICULAR_ENGINE_FORCE; break; }
-        case Key::Down:  { m_EngineForce.y += FORWARD_ENGINE_FORCE; break; }
-        case Key::Up:    { m_EngineForce.y -= FORWARD_ENGINE_FORCE; break; }
+        case Key::Left:  { m_EngineForce.x += SPACESHIP_PERPENDICULAR_ENGINE_FORCE; break; }
+        case Key::Right: { m_EngineForce.x -= SPACESHIP_PERPENDICULAR_ENGINE_FORCE; break; }
+        case Key::Down:  { m_EngineForce.y += SPACESHIP_FORWARD_ENGINE_FORCE; break; }
+        case Key::Up:    { m_EngineForce.y -= SPACESHIP_FORWARD_ENGINE_FORCE; break; }
         default:         { break; }
     }
 }

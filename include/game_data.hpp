@@ -34,8 +34,19 @@
 
 namespace gwars {
 
-extern const Polygon PLAYER_SPACESHIP_MODEL;
-extern const Polygon PLAYER_SPACESHIP_PROJECTILE_MODEL;
+extern const Polygon SPACESHIP_MODEL;
+extern const Polygon SPACESHIP_PROJECTILE_MODEL;
+
+static const Vec2f SPACESHIP_FORWARD;
+static const float SPACESHIP_FORWARD_ENGINE_FORCE;
+static const float SPACESHIP_PERPENDICULAR_ENGINE_FORCE;
+static const float SPACESHIP_FRICTION;
+static const Vec2f SPACESHIP_LEFT_GUN_POSITION;
+static const Vec2f SPACESHIP_RIGHT_GUN_POSITION;
+static const float SPACESHIP_PROJECTILE_VELOCITY;
+static const float SPACESHIP_RECHARGE_TIME;
+static const Vec2f SPACESHIP_BOUNDING_SPHERE_TRANSLATION;
+static const float SPACESHIP_BOUNDING_SPHERE_RADIUS;
 
 //==================================================================================================
 // Game Scripts
@@ -52,15 +63,6 @@ public:
     virtual void onUpdate(float dt) override;
 
 private:
-    static const Vec2f FORWARD;
-    static const float FORWARD_ENGINE_FORCE;
-    static const float PERPENDICULAR_ENGINE_FORCE;
-    static const float FRICTION;
-    static const Vec2f LEFT_GUN_POSITION;
-    static const Vec2f RIGHT_GUN_POSITION;
-    static const float PROJECTILE_VELOCITY;
-    static const float RECHARGE_TIME;
-
     void shoot(Vec2f position, Vec2f velocity);
 
     Vec2f calculateForward();

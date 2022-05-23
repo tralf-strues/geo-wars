@@ -34,7 +34,14 @@
 
 namespace gwars {
 
-class Entity;
+struct CollisionEvent
+{
+    Entity firstEntity;
+    Entity secondEntity;
+
+    CollisionEvent() = default;
+    CollisionEvent(Entity firstEntity, Entity secondEntity);
+};
 
 class Scene
 {
@@ -56,6 +63,8 @@ private:
     void onScriptRemoved(const EventComponentRemove<ScriptComponent>& event);
 
     void onCameraAdded(const EventComponentConstruct<CameraComponent>& event);
+
+    // void onBoundingSphereAdded(const EventComponentConstruct<BoundingSphereComponent>& event);
 
 private:
     EntityManager    m_Entities;
