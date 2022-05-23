@@ -28,6 +28,7 @@
 #pragma once
 
 #include "ecs/entity_manager.hpp"
+#include "events/event_dispatcher.hpp"
 #include "renderer/renderer.hpp"
 #include "scene/components.hpp"
 
@@ -38,7 +39,7 @@ class Entity;
 class Scene
 {
 public:
-    Scene(/*EventDispatcher dispatcher*/) = default;
+    Scene(EventDispatcher& eventDispatcher);
 
     Entity         createEntity();
     EntityManager& getEntityManager();
@@ -47,7 +48,8 @@ public:
     void render(Renderer& renderer);
 
 private:
-    EntityManager m_Entities;
+    EntityManager    m_Entities;
+    EventDispatcher& m_EventDispatcher;
 };
 
 } // namespace gwars

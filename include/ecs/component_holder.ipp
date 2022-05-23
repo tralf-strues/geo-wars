@@ -31,7 +31,7 @@
 
 namespace gwars {
 
-static uint32_t s_NextComponentTypeId = 1;
+extern uint32_t s_NextComponentTypeId;
 
 template<typename T>
 ComponentTypeId ComponentHolder<T>::s_TypeId{s_NextComponentTypeId++};

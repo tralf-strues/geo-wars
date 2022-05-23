@@ -11,6 +11,7 @@ target_sources(gwars
   )
 
 add_subdirectory(ecs)
+add_subdirectory(events)
 add_subdirectory(math)
 add_subdirectory(renderer)
 add_subdirectory(scene)

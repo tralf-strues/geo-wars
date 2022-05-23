@@ -31,6 +31,8 @@
 
 using namespace gwars;
 
+Scene::Scene(EventDispatcher& eventDispatcher) : m_EventDispatcher(eventDispatcher) {}
+
 Entity Scene::createEntity() { return Entity(m_Entities.createEntity(), m_Entities); }
 
 EntityManager& Scene::getEntityManager() { return m_Entities; }

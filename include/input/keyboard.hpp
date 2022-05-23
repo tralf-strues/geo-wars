@@ -1,21 +1,21 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file game_layer.cpp
- * @date 2022-05-22
- *
+ * @file keyboard.hpp
+ * @date 2022-05-23
+ * 
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,32 +25,31 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "game_layer.hpp"
+#pragma once
 
 namespace gwars {
 
-Entity g_Line;
-
-GameLayer::GameLayer(EventDispatcher& eventDispatcher) : m_GameScene(eventDispatcher) {}
-
-void GameLayer::onInit()
+enum class Key
 {
-    g_Line = m_GameScene.createEntity();
-    g_Line.createComponent<TransformComponent>();
-    g_Line.getComponent<TransformComponent>().scale.x = 16;
-    g_Line.createComponent<LineComponent>();
+    Invalid = -1,
 
-    Entity camera = m_GameScene.createEntity();
-    camera.createComponent<TransformComponent>(Vec2f(-100, -100));
-    camera.createComponent<CameraComponent>(OrthographicCameraSpecs(1024, 768), true);
-}
+    Esc,
+    Space,
+    Return,
+    Up,
+    Down,
+    Right,
+    Left,
 
-void GameLayer::onUpdate(float dt)
+    Total
+};
+
+struct KeyPressedEvent
 {
-    m_GameScene.onUpdate(dt);
-    g_Line.getComponent<TransformComponent>().rotation += dt;
-}
+    Key key{Key::Invalid};
 
-void GameLayer::onRender(Renderer& renderer) { m_GameScene.render(renderer); }
+    KeyPressedEvent() = default;
+    KeyPressedEvent(Key key) : key(key) {}
+};
 
 } // namespace gwars

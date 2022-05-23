@@ -1,0 +1,10 @@
+target_sources(gwars
+  PUBLIC
+    ${GWARS_SOURCE_DIR}/include/events/event_dispatcher.hpp
+    ${GWARS_SOURCE_DIR}/include/events/event_sink.hpp
+    ${GWARS_SOURCE_DIR}/include/events/event.hpp
+  PRIVATE
+    ${GWARS_SOURCE_DIR}/src/events/event_dispatcher.cpp
+    ${GWARS_SOURCE_DIR}/src/events/event_sink.cpp
+    ${GWARS_SOURCE_DIR}/src/events/event.cpp
+  )

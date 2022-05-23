@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file game_layer.cpp
- * @date 2022-05-22
+ * @file event.hpp
+ * @date 2022-05-23
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -25,32 +25,29 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "game_layer.hpp"
+#pragma once
+
+#include <functional>
+#include <stdint.h>
+#include <unordered_map>
+#include <vector>
 
 namespace gwars {
 
-Entity g_Line;
+using EventType                    = uint64_t;
+const EventType INVALID_EVENT_TYPE = 0;
 
-GameLayer::GameLayer(EventDispatcher& eventDispatcher) : m_GameScene(eventDispatcher) {}
-
-void GameLayer::onInit()
+struct StaticEventTypeGenerator
 {
-    g_Line = m_GameScene.createEntity();
-    g_Line.createComponent<TransformComponent>();
-    g_Line.getComponent<TransformComponent>().scale.x = 16;
-    g_Line.createComponent<LineComponent>();
+    static EventType nextEventType();
+};
 
-    Entity camera = m_GameScene.createEntity();
-    camera.createComponent<TransformComponent>(Vec2f(-100, -100));
-    camera.createComponent<CameraComponent>(OrthographicCameraSpecs(1024, 768), true);
-}
-
-void GameLayer::onUpdate(float dt)
+template<typename T>
+struct StaticEventTypeHolder
 {
-    m_GameScene.onUpdate(dt);
-    g_Line.getComponent<TransformComponent>().rotation += dt;
-}
-
-void GameLayer::onRender(Renderer& renderer) { m_GameScene.render(renderer); }
+    static EventType getType();
+};
 
 } // namespace gwars
+
+#include "events/event.ipp"

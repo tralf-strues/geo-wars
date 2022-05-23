@@ -36,7 +36,7 @@ namespace gwars {
 class GameLayer
 {
 public:
-    GameLayer() = default;
+    GameLayer(EventDispatcher& eventDispatcher);
 
     void onInit();
     void onUpdate(float dt);
