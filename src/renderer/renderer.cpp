@@ -119,40 +119,44 @@ float capsuleSDF(Vec2f pixel, Vec2f from, Vec2f to, float thickness)
     return length(delta) - thickness;
 }
 
-void Renderer::drawLine(const Line& line, const Mat3f& transform)
+void Renderer::drawLine(Vec2f msFrom, Vec2f msTo, Color color, float thickness, const Mat3f& transform)
 {
-    Vec2f from = ndcToFrameBuffer(m_ScenePassData.projectionViewMatrix * transform * Vec3f(line.from));
-    Vec2f to   = ndcToFrameBuffer(m_ScenePassData.projectionViewMatrix * transform * Vec3f(line.to));
+    Vec2f from = ndcToFrameBuffer(m_ScenePassData.projectionViewMatrix * transform * Vec3f(msFrom));
+    Vec2f to   = ndcToFrameBuffer(m_ScenePassData.projectionViewMatrix * transform * Vec3f(msTo));
 
-    int x0 = static_cast<int>(std::floor(std::min(from.x, to.x) - line.thickness));
-    int x1 = static_cast<int>(std::ceil(std::max(from.x, to.x) + line.thickness));
+    int x0 = static_cast<int>(std::floor(std::min(from.x, to.x) - thickness));
+    int x1 = static_cast<int>(std::ceil(std::max(from.x, to.x) + thickness));
 
-    int y0 = static_cast<int>(std::floor(std::min(from.y, to.y) - line.thickness));
-    int y1 = static_cast<int>(std::ceil(std::max(from.y, to.y) + line.thickness));
+    int y0 = static_cast<int>(std::floor(std::min(from.y, to.y) - thickness));
+    int y1 = static_cast<int>(std::ceil(std::max(from.y, to.y) + thickness));
 
-    Colorf colorf(line.color);
+    Colorf colorf(color);
 
     for (int y = y0; y <= y1; ++y)
     {
         for (int x = x0; x <= x1; ++x)
         {
-            float alpha = std::max(std::min(0.5f - capsuleSDF(Vec2f(x, y), from, to, line.thickness), 1.0f), 0.0f);
+            float alpha = std::max(std::min(0.5f - capsuleSDF(Vec2f(x, y), from, to, thickness), 1.0f), 0.0f);
             putPixelBlended(Vec2i(x, y), colorf.rgb, colorf.a * alpha);
         }
     }
 }
 
-void Renderer::drawTriangle(const Triangle& triangle, const Mat3f& transform)
+void Renderer::drawPolygon(const Polygon& polygon, const Mat3f& transform)
 {
-    drawLine(Line(triangle.vertices[0], triangle.vertices[1], triangle.color, triangle.thickness), transform);
-    drawLine(Line(triangle.vertices[1], triangle.vertices[2], triangle.color, triangle.thickness), transform);
-    drawLine(Line(triangle.vertices[2], triangle.vertices[0], triangle.color, triangle.thickness), transform);
-}
+    if (polygon.vertices.empty())
+    {
+        return;
+    }
 
-void Renderer::drawQuad(const Quad& quad, const Mat3f& transform)
-{
-    drawLine(Line(quad.vertices[0], quad.vertices[1], quad.color, quad.thickness), transform);
-    drawLine(Line(quad.vertices[1], quad.vertices[2], quad.color, quad.thickness), transform);
-    drawLine(Line(quad.vertices[2], quad.vertices[3], quad.color, quad.thickness), transform);
-    drawLine(Line(quad.vertices[3], quad.vertices[0], quad.color, quad.thickness), transform);
+    size_t verticesCount = polygon.vertices.size();
+
+    for (uint32_t vertex = 0; vertex < verticesCount; ++vertex)
+    {
+        drawLine(polygon.vertices[vertex],
+                 polygon.vertices[(vertex + 1) % verticesCount],
+                 polygon.color,
+                 polygon.thickness,
+                 transform);
+    }
 }

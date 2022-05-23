@@ -1,7 +1,7 @@
 /**
  * @author Nikita Mochalov (github.com/tralf-strues)
- * @file draw_primitives.hpp
- * @date 2022-05-22
+ * @file draw_primitives.cpp
+ * @date 2022-05-23
  *
  * The MIT License (MIT)
  * Copyright (c) 2022 Nikita Mochalov
@@ -27,33 +27,47 @@
 
 #pragma once
 
-#include "math/mat3.hpp"
-#include "renderer/color.hpp"
-#include <vector>
+#include "renderer/draw_primitives.hpp"
 
 namespace gwars {
 
-struct Polygon
+Polygon Polygon::createLine(Vec2f from, Vec2f to, Color color, float thickness)
 {
-    std::vector<Vec2f> vertices;
-    Color              color{0xFFFFFFFF};
-    float              thickness{1};
+    Polygon polygon;
+    polygon.vertices.push_back(from);
+    polygon.vertices.push_back(to);
 
-    static Polygon
-    createLine(Vec2f from = Vec2f(0, 0), Vec2f to = Vec2f(1, 0), Color color = 0xFFFFFFFF, float thickness = 1);
+    polygon.color     = color;
+    polygon.thickness = thickness;
 
-    static Polygon createTriangle(Vec2f v0        = Vec2f(-0.5, -0.5),
-                                  Vec2f v1        = Vec2f(0.5, -0.5),
-                                  Vec2f v2        = Vec2f(0, 0.5),
-                                  Color color     = 0xFFFFFFFF,
-                                  float thickness = 1);
+    return polygon;
+}
 
-    static Polygon createQuad(Vec2f v0        = Vec2f(-0.5, -0.5),
-                              Vec2f v1        = Vec2f(0.5, -0.5),
-                              Vec2f v2        = Vec2f(0.5, 0.5),
-                              Vec2f v3        = Vec2f(-0.5, 0.5),
-                              Color color     = 0xFFFFFFFF,
-                              float thickness = 1);
-};
+Polygon Polygon::createTriangle(Vec2f v0, Vec2f v1, Vec2f v2, Color color, float thickness)
+{
+    Polygon polygon;
+    polygon.vertices.push_back(v0);
+    polygon.vertices.push_back(v1);
+    polygon.vertices.push_back(v2);
+
+    polygon.color     = color;
+    polygon.thickness = thickness;
+
+    return polygon;
+}
+
+Polygon Polygon::createQuad(Vec2f v0, Vec2f v1, Vec2f v2, Vec2f v3, Color color, float thickness)
+{
+    Polygon polygon;
+    polygon.vertices.push_back(v0);
+    polygon.vertices.push_back(v1);
+    polygon.vertices.push_back(v2);
+    polygon.vertices.push_back(v3);
+
+    polygon.color     = color;
+    polygon.thickness = thickness;
+
+    return polygon;
+}
 
 } // namespace gwars

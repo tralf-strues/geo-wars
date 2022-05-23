@@ -78,35 +78,42 @@ private:
     Vec2f m_Velocity{0, 0};
 };
 
+#include <stdio.h>
 void GameLayer::onInit()
 {
     m_GameScene.onInit();
 
+    printf("GameLayer::onInit() started\n");
+
     Entity line = m_GameScene.createEntity();
     line.createComponent<TransformComponent>();
     line.getComponent<TransformComponent>().scale.x = 16;
-    line.createComponent<LineComponent>();
-    line.getComponent<LineComponent>().line.color = 0xFF0000AA;
-    line.getComponent<LineComponent>().line.thickness = 2;
+    line.createComponent<PolygonComponent>(Polygon::createLine());
+    line.getComponent<PolygonComponent>().polygon.color = 0xFF0000AA;
+    line.getComponent<PolygonComponent>().polygon.thickness = 2;
     line.createComponent<ScriptComponent>(new MovementScript());
+
+    printf("GameLayer::onInit(): line created!\n");
 
     Entity triangle = m_GameScene.createEntity();
     triangle.createComponent<TransformComponent>(Vec2f(22, -22), 0, Vec2f(10, 10));
-    triangle.createComponent<TriangleComponent>();
-    triangle.getComponent<TriangleComponent>().triangle.color = 0xFF00FF00;
-    triangle.getComponent<TriangleComponent>().triangle.thickness = 2;
+    triangle.createComponent<PolygonComponent>(Polygon::createTriangle());
+    triangle.getComponent<PolygonComponent>().polygon.color = 0xFF00FF00;
+    triangle.getComponent<PolygonComponent>().polygon.thickness = 2;
     triangle.createComponent<ScriptComponent>(new MovementScript());
 
     Entity quad = m_GameScene.createEntity();
     quad.createComponent<TransformComponent>(Vec2f(-80, 22), 0, Vec2f(10, 5));
-    quad.createComponent<QuadComponent>();
-    quad.getComponent<QuadComponent>().quad.color = 0xFFFF00FF;
-    quad.getComponent<QuadComponent>().quad.thickness = 3;
+    quad.createComponent<PolygonComponent>(Polygon::createQuad());
+    quad.getComponent<PolygonComponent>().polygon.color = 0xFFFF00FF;
+    quad.getComponent<PolygonComponent>().polygon.thickness = 3;
     quad.createComponent<ScriptComponent>(new MovementScript());
 
     Entity camera = m_GameScene.createEntity();
     camera.createComponent<TransformComponent>(Vec2f(-100, -100));
     camera.createComponent<CameraComponent>(OrthographicCameraSpecs(1024, 768), true);
+
+    printf("GameLayer::onInit() finished\n");
 }
 
 void GameLayer::onUpdate(float dt)

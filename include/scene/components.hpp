@@ -76,28 +76,12 @@ struct CameraComponent
     }
 };
 
-struct LineComponent
+struct PolygonComponent
 {
-    Line line;
+    Polygon polygon;
 
-    LineComponent() = default;
-    LineComponent(const Line& line) : line(line) {}
-};
-
-struct TriangleComponent
-{
-    Triangle triangle;
-
-    TriangleComponent() = default;
-    TriangleComponent(const Triangle& triangle) : triangle(triangle) {}
-};
-
-struct QuadComponent
-{
-    Quad quad;
-
-    QuadComponent() = default;
-    QuadComponent(const Quad& quad) : quad(quad) {}
+    PolygonComponent() = default;
+    PolygonComponent(const Polygon& polygon) : polygon(polygon) {}
 };
 
 struct ScriptComponent

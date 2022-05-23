@@ -101,22 +101,10 @@ void Scene::render(Renderer& renderer)
 
     renderer.clear(Color(10, 0, 10, 255));
 
-    for (auto [line, component] : getView<LineComponent>(m_Entities))
+    for (auto [polygon, component] : getView<PolygonComponent>(m_Entities))
     {
-        assert(line.hasComponent<TransformComponent>());
-        renderer.drawLine(component.line, line.getComponent<TransformComponent>().calculateMatrix());
-    }
-
-    for (auto [triangle, component] : getView<TriangleComponent>(m_Entities))
-    {
-        assert(triangle.hasComponent<TransformComponent>());
-        renderer.drawTriangle(component.triangle, triangle.getComponent<TransformComponent>().calculateMatrix());
-    }
-
-    for (auto [quad, component] : getView<QuadComponent>(m_Entities))
-    {
-        assert(quad.hasComponent<TransformComponent>());
-        renderer.drawQuad(component.quad, quad.getComponent<TransformComponent>().calculateMatrix());
+        assert(polygon.hasComponent<TransformComponent>());
+        renderer.drawPolygon(component.polygon, polygon.getComponent<TransformComponent>().calculateMatrix());
     }
 
     renderer.endScene();

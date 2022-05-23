@@ -1,7 +1,10 @@
 target_sources(gwars
   PUBLIC
+    ${GWARS_SOURCE_DIR}/include/renderer/camera.hpp
     ${GWARS_SOURCE_DIR}/include/renderer/color.hpp
+    ${GWARS_SOURCE_DIR}/include/renderer/draw_primitives.hpp
     ${GWARS_SOURCE_DIR}/include/renderer/renderer.hpp
     PRIVATE
+    ${GWARS_SOURCE_DIR}/src/renderer/draw_primitives.cpp
     ${GWARS_SOURCE_DIR}/src/renderer/renderer.cpp
   )
