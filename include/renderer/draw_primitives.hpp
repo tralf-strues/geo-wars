@@ -45,4 +45,44 @@ struct Line
     }
 };
 
+struct Triangle
+{
+    Vec2f vertices[3];
+    Color color;
+    float thickness;
+
+    Triangle(Vec2f v0        = Vec2f(-0.5, -0.5),
+             Vec2f v1        = Vec2f(0.5, -0.5),
+             Vec2f v2        = Vec2f(0, 0.5),
+             Color color     = 0xFFFFFFFF,
+             float thickness = 1)
+        : color(color), thickness(thickness)
+    {
+        vertices[0] = v0;
+        vertices[1] = v1;
+        vertices[2] = v2;
+    }
+};
+
+struct Quad
+{
+    Vec2f vertices[4];
+    Color color;
+    float thickness;
+
+    Quad(Vec2f v0        = Vec2f(-0.5, -0.5),
+         Vec2f v1        = Vec2f(0.5, -0.5),
+         Vec2f v2        = Vec2f(0.5, 0.5),
+         Vec2f v3        = Vec2f(-0.5, 0.5),
+         Color color     = 0xFFFFFFFF,
+         float thickness = 1)
+        : color(color), thickness(thickness)
+    {
+        vertices[0] = v0;
+        vertices[1] = v1;
+        vertices[2] = v2;
+        vertices[3] = v3;
+    }
+};
+
 } // namespace gwars

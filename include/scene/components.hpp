@@ -84,6 +84,22 @@ struct LineComponent
     LineComponent(const Line& line) : line(line) {}
 };
 
+struct TriangleComponent
+{
+    Triangle triangle;
+
+    TriangleComponent() = default;
+    TriangleComponent(const Triangle& triangle) : triangle(triangle) {}
+};
+
+struct QuadComponent
+{
+    Quad quad;
+
+    QuadComponent() = default;
+    QuadComponent(const Quad& quad) : quad(quad) {}
+};
+
 struct ScriptComponent
 {
     INativeScript* nativeScript;

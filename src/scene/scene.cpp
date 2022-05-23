@@ -104,11 +104,19 @@ void Scene::render(Renderer& renderer)
     for (auto [line, component] : getView<LineComponent>(m_Entities))
     {
         assert(line.hasComponent<TransformComponent>());
+        renderer.drawLine(component.line, line.getComponent<TransformComponent>().calculateMatrix());
+    }
 
-        Line worldSpaceLine = component.line;
-        worldSpaceLine.from = line.getComponent<TransformComponent>().calculateMatrix() * Vec3f(worldSpaceLine.from);
-        worldSpaceLine.to   = line.getComponent<TransformComponent>().calculateMatrix() * Vec3f(worldSpaceLine.to);
-        renderer.drawLine(worldSpaceLine);
+    for (auto [triangle, component] : getView<TriangleComponent>(m_Entities))
+    {
+        assert(triangle.hasComponent<TransformComponent>());
+        renderer.drawTriangle(component.triangle, triangle.getComponent<TransformComponent>().calculateMatrix());
+    }
+
+    for (auto [quad, component] : getView<QuadComponent>(m_Entities))
+    {
+        assert(quad.hasComponent<TransformComponent>());
+        renderer.drawQuad(component.quad, quad.getComponent<TransformComponent>().calculateMatrix());
     }
 
     renderer.endScene();

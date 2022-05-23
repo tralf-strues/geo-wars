@@ -31,8 +31,6 @@
 
 namespace gwars {
 
-Entity g_Line;
-
 GameLayer::GameLayer(EventDispatcher& eventDispatcher) : m_GameScene(eventDispatcher) {}
 
 class MovementScript : public INativeScript
@@ -59,6 +57,7 @@ public:
 
         TransformComponent& transform = m_Entity.getComponent<TransformComponent>();
         transform.translation += m_Velocity * dt;
+        transform.rotation += 0.5 * dt;
     }
 
 private:
@@ -83,11 +82,27 @@ void GameLayer::onInit()
 {
     m_GameScene.onInit();
 
-    g_Line = m_GameScene.createEntity();
-    g_Line.createComponent<TransformComponent>();
-    g_Line.getComponent<TransformComponent>().scale.x = 16;
-    g_Line.createComponent<LineComponent>();
-    g_Line.createComponent<ScriptComponent>(new MovementScript());
+    Entity line = m_GameScene.createEntity();
+    line.createComponent<TransformComponent>();
+    line.getComponent<TransformComponent>().scale.x = 16;
+    line.createComponent<LineComponent>();
+    line.getComponent<LineComponent>().line.color = 0xFF0000AA;
+    line.getComponent<LineComponent>().line.thickness = 2;
+    line.createComponent<ScriptComponent>(new MovementScript());
+
+    Entity triangle = m_GameScene.createEntity();
+    triangle.createComponent<TransformComponent>(Vec2f(22, -22), 0, Vec2f(10, 10));
+    triangle.createComponent<TriangleComponent>();
+    triangle.getComponent<TriangleComponent>().triangle.color = 0xFF00FF00;
+    triangle.getComponent<TriangleComponent>().triangle.thickness = 2;
+    triangle.createComponent<ScriptComponent>(new MovementScript());
+
+    Entity quad = m_GameScene.createEntity();
+    quad.createComponent<TransformComponent>(Vec2f(-80, 22), 0, Vec2f(10, 5));
+    quad.createComponent<QuadComponent>();
+    quad.getComponent<QuadComponent>().quad.color = 0xFFFF00FF;
+    quad.getComponent<QuadComponent>().quad.thickness = 3;
+    quad.createComponent<ScriptComponent>(new MovementScript());
 
     Entity camera = m_GameScene.createEntity();
     camera.createComponent<TransformComponent>(Vec2f(-100, -100));
@@ -97,7 +112,6 @@ void GameLayer::onInit()
 void GameLayer::onUpdate(float dt)
 {
     m_GameScene.onUpdate(dt);
-    g_Line.getComponent<TransformComponent>().rotation += dt;
 }
 
 void GameLayer::onRender(Renderer& renderer) { m_GameScene.render(renderer); }

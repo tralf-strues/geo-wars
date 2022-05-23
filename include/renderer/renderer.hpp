@@ -83,8 +83,9 @@ public:
 
     void clear(Color color);
 
-    void drawLine(const Line& line);
-    void drawPoint();
+    void drawLine(const Line& line, const Mat3f& transform);
+    void drawTriangle(const Triangle& triangle, const Mat3f& transform);
+    void drawQuad(const Quad& quad, const Mat3f& transform);
 
 private:
     inline void putPixel(Vec2i pixel, Color color)
